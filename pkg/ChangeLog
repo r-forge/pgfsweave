@@ -1,3 +1,17 @@
+commit 5f42a284cef2fed990b9298d66bbe842be4630e8
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Tue Nov 17 00:44:07 2009 -0700
+
+    New install script for pgfsweave-script.R, which takes into account if windows is being used and acts accordingly
+    
+    Added dummy c file to avoid check warning
+
+ exec/install-script.R |   55 +++++++++++++++++++++++++++++++++++++++++++++++++
+ src/Makevars          |   14 +-----------
+ src/Makevars.win      |   22 -------------------
+ src/dummy.c           |    5 ++++
+ 4 files changed, 61 insertions(+), 35 deletions(-)
+
 commit 1fdc9eaff9008e1cf894430621fe47cfea10bd8e
 Author: cameronbracken <cameron.bracken@gmail.com>
 Date:   Sat Nov 14 23:57:56 2009 -0700
