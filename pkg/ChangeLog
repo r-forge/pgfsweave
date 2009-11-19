@@ -1,6 +1,22 @@
-commit 9df21b759c0a21234a880780860b7e049420154b
-Author: cameronbracken <cameron.bracken@gmail.com>
-Date:   Tue Nov 17 01:11:08 2009 -0700
+commit c61bdaba9895fc5129aea79812be2586f6ca2548
+Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
+Date:   Tue Nov 17 08:13:02 2009 +0000
+
+    Vignette recompile
+    
+    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@7 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
+
+ ChangeLog                                 | 1618 +++++++++++------------------
+ inst/doc/figs/fig-normalSweave.pdf        |  Bin 6663 -> 2957 bytes
+ inst/doc/figs/fig-pgfSweave-hist.pdf      |  Bin 17335 -> 17300 bytes
+ inst/doc/figs/fig-pgfSweave-tikz-hist.pdf |  Bin 28704 -> 28696 bytes
+ inst/doc/pgfSweave-example.pdf            |  Bin 86845 -> 86755 bytes
+ inst/doc/pgfSweave.pdf                    |  Bin 279892 -> 277158 bytes
+ 6 files changed, 589 insertions(+), 1029 deletions(-)
+
+commit c8a8648ef1b6819cc610ff8ec414e481212989d6
+Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
+Date:   Tue Nov 17 08:12:58 2009 +0000
 
     Conflicts:
     	ChangeLog
@@ -15,6 +31,8 @@ Date:   Tue Nov 17 01:11:08 2009 -0700
     	inst/doc/pgfSweave-example.pdf
     	inst/doc/pgfSweave.pdf
     	src/Makevars
+    
+    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@6 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
 
  ChangeLog                          |   14 +++++++++
  DESCRIPTION                        |    2 +-
