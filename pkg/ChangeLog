@@ -1,11 +1,44 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-commit 82cc2fd18794b91439e84120172991ec230a9b36
-Merge: d790e2d 09fc61a
+commit 64c157148d2582140afaddc553fa2da931eb6c03
+Merge: 9e9787a d8ec864
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Thu Apr 8 13:05:15 2010 -0600
+
+    Merge branch 'master' into r-forge-local
+    
+    Conflicts:
+    	ChangeLog
+    	inst/doc/figs/fig-normalSweave.pdf
+    	inst/doc/pgfSweave-example.pdf
+    	inst/doc/pgfSweave.pdf
+
+commit d8ec8642a7296225877f14a40098fdb43cf92cb8
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Thu Apr 8 13:02:12 2010 -0600
+
+    Try using predefined R_HOME in Makevars and no GNU Make requirement
+    
+    Add binary attribute to pdf files to avoid merging, rebuild vignette to test
+
+ .gitattributes                            |    1 +
+ ChangeLog                                 |   36 +++++++++++++++++++++++++++++
+ DESCRIPTION                               |    2 +-
+ inst/doc/figs/fig-normalSweave.pdf        |  Bin 3056 -> 3140 bytes
+ inst/doc/figs/fig-pgfSweave-hist.pdf      |  Bin 17639 -> 17643 bytes
+ inst/doc/figs/fig-pgfSweave-tikz-hist.pdf |  Bin 28915 -> 28962 bytes
+ inst/doc/pgfSweave-example.pdf            |  Bin 88353 -> 88361 bytes
+ inst/doc/pgfSweave.pdf                    |  Bin 293971 -> 294117 bytes
+ src/Makevars                              |    4 ---
+ 9 files changed, 38 insertions(+), 5 deletions(-)
+
+commit 9e9787ac21c4510c8743d06a058773f3cc10d7f8
+Merge: 5729aac a6c2600
 Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Sat Dec 5 19:01:42 2009 +0000
-=======
-=======
+Date:   Wed Apr 7 00:31:51 2010 +0000
+
+    Merge branch 'master' into r-forge-local
+    
+    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@14 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
+
 commit a6c2600e7df9b9137c0ef1c0caf6d002df33e36e
 Author: cameronbracken <cameron.bracken@gmail.com>
 Date:   Tue Apr 6 18:29:32 2010 -0600
@@ -15,6 +48,21 @@ Date:   Tue Apr 6 18:29:32 2010 -0600
  DESCRIPTION  |    3 ++-
  src/Makevars |    4 ++++
  2 files changed, 6 insertions(+), 1 deletions(-)
+
+commit 5729aac3dedd669e2a749b84f735b33a6c3a76b1
+Merge: dfa4886 0c7ffb2
+Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
+Date:   Sun Apr 4 21:04:43 2010 +0000
+
+    Merge branch 'master' into r-forge-local
+    
+    Conflicts:
+    	ChangeLog
+    	inst/doc/figs/fig-normalSweave.pdf
+    	inst/doc/pgfSweave-example.pdf
+    	inst/doc/pgfSweave.pdf
+    
+    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@13 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
 
 commit 0c7ffb21a7b856e6a484004fb7bb211254a9a830
 Author: cameronbracken <cameron.bracken@gmail.com>
@@ -42,7 +90,6 @@ Date:   Sun Apr 4 14:42:36 2010 -0600
  inst/doc/pgfSweave.pdf                    |  Bin 290456 -> 293971 bytes
  9 files changed, 64 insertions(+), 4 deletions(-)
 
->>>>>>> master
 commit 481238dfd60acd0d34d94e4ab0d982dd28dc67be
 Author: cameronbracken <cameron.bracken@gmail.com>
 Date:   Sun Apr 4 14:19:59 2010 -0600
@@ -123,6 +170,23 @@ Date:   Tue Feb 23 01:57:06 2010 -0700
  .../vignette-src/pgfSweave-vignette-source.Rnw     |    6 ++-
  12 files changed, 84 insertions(+), 50 deletions(-)
 
+commit dfa48866b3b94c253b68c98d960aa2b3b5e46de3
+Merge: 82cc2fd 8b64651
+Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
+Date:   Fri Dec 25 20:40:27 2009 +0000
+
+    Merge branch 'master' into r-forge-local
+    
+    Conflicts:
+    	ChangeLog
+    	inst/doc/figs/fig-normalSweave.pdf
+    	inst/doc/figs/fig-pgfSweave-hist.pdf
+    	inst/doc/figs/fig-pgfSweave-tikz-hist.pdf
+    	inst/doc/pgfSweave-example.pdf
+    	inst/doc/pgfSweave.pdf
+    
+    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@12 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
+
 commit 8b646513162b8486904ddbd916becc9d75602040
 Author: cameronbracken <cameron.bracken@gmail.com>
 Date:   Fri Dec 25 12:32:28 2009 -0800
@@ -146,7 +210,18 @@ Date:   Fri Dec 25 12:32:28 2009 -0800
 commit 648d3068935afa77325696f95614ddf302903bff
 Author: cameronbracken <cameron.bracken@gmail.com>
 Date:   Sun Dec 6 01:59:47 2009 -0700
->>>>>>> master
+
+    Better help for pgfsweave-script.R
+
+ exec/install-script.R   |    2 +-
+ exec/pgfsweave          |    4 +++-
+ exec/pgfsweave-script.R |   26 ++++++++++++++------------
+ 3 files changed, 18 insertions(+), 14 deletions(-)
+
+commit 82cc2fd18794b91439e84120172991ec230a9b36
+Merge: d790e2d 09fc61a
+Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
+Date:   Sat Dec 5 19:01:42 2009 +0000
 
     Merge branch 'master' into r-forge-local
     
