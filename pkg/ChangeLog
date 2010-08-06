@@ -1,7 +1,23 @@
-commit 64c157148d2582140afaddc553fa2da931eb6c03
+commit 7a8a931fc425c3816a2c48146432b21445e382d0
+Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
+Date:   Thu Apr 8 19:09:45 2010 +0000
+
+    Merge master branch
+    
+    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@16 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
+
+ ChangeLog                                 |   93 ++++++++++++++++++++++++++---
+ inst/doc/figs/fig-normalSweave.pdf        |  Bin 5510 -> 3083 bytes
+ inst/doc/figs/fig-pgfSweave-hist.pdf      |  Bin 17643 -> 17539 bytes
+ inst/doc/figs/fig-pgfSweave-tikz-hist.pdf |  Bin 28962 -> 29032 bytes
+ inst/doc/pgfSweave-example.pdf            |  Bin 88108 -> 88361 bytes
+ inst/doc/pgfSweave.pdf                    |  Bin 294220 -> 294023 bytes
+ 6 files changed, 84 insertions(+), 9 deletions(-)
+
+commit ba711ef7b690c45161572e5d413c78f39913d239
 Merge: 9e9787a d8ec864
-Author: cameronbracken <cameron.bracken@gmail.com>
-Date:   Thu Apr 8 13:05:15 2010 -0600
+Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
+Date:   Thu Apr 8 19:09:40 2010 +0000
 
     Merge branch 'master' into r-forge-local
     
@@ -10,6 +26,8 @@ Date:   Thu Apr 8 13:05:15 2010 -0600
     	inst/doc/figs/fig-normalSweave.pdf
     	inst/doc/pgfSweave-example.pdf
     	inst/doc/pgfSweave.pdf
+    
+    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@15 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
 
 commit d8ec8642a7296225877f14a40098fdb43cf92cb8
 Author: cameronbracken <cameron.bracken@gmail.com>
