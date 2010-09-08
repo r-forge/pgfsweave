@@ -1,3 +1,50 @@
+commit 45a93a66941cf6a04b117a413981cb41266a0f91
+Merge: 7a8a931 7bbab36
+Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
+Date:   Fri Aug 6 16:45:11 2010 +0000
+
+    Version 1.0.6
+    
+    Merge branch 'master' into r-forge-local
+    
+    Conflicts:
+    	ChangeLog
+    	inst/doc/figs/fig-normalSweave.pdf
+    	inst/doc/figs/fig-pgfSweave-hist.pdf
+    	inst/doc/figs/fig-pgfSweave-tikz-hist.pdf
+    	inst/doc/pgfSweave-example.pdf
+    	inst/doc/pgfSweave.pdf
+    
+    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@17 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
+
+commit 7bbab36054009e9b5964497aeb39776c40b1e4d8
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Fri Aug 6 10:38:23 2010 -0600
+
+    Version 1.0.6
+
+ .gitignore                                |    1 +
+ ChangeLog                                 |   28 ++++++
+ DESCRIPTION                               |    4 +-
+ NEWS                                      |    8 ++-
+ README                                    |  126 ----------------------------
+ README.md                                 |  128 +++++++++++++++++++++++++++++
+ inst/doc/figs/fig-normalSweave.pdf        |  Bin 3140 -> 3044 bytes
+ inst/doc/figs/fig-pgfSweave-hist.pdf      |  Bin 17643 -> 16199 bytes
+ inst/doc/figs/fig-pgfSweave-tikz-hist.pdf |  Bin 28962 -> 26902 bytes
+ inst/doc/pgfSweave-example.pdf            |  Bin 88361 -> 83289 bytes
+ inst/doc/pgfSweave.pdf                    |  Bin 294117 -> 259847 bytes
+ 11 files changed, 166 insertions(+), 129 deletions(-)
+
+commit 90eca3594203c1f5fefc286040958a8d57441b5f
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Wed Apr 28 17:46:04 2010 -0600
+
+    Incorporating changes from Yihui Xie which preserves comments in echo'd code when keep.source=F
+
+ R/pgfSweaveDriver.R |   78 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 76 insertions(+), 2 deletions(-)
+
 commit 7a8a931fc425c3816a2c48146432b21445e382d0
 Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
 Date:   Thu Apr 8 19:09:45 2010 +0000
