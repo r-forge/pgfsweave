@@ -1,11 +1,13 @@
-commit ce69d801d5eed9984b31adc09ff830da625ff428
-Merge: 760492f 91209db
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Tue Sep 14 06:10:23 2010 +0000
+commit c022dab0dcadb7b798aa0267897ca985b2f9eadc
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Wed Nov 3 13:22:56 2010 -0600
 
-    Merge branch 'master' into r-forge-local
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@19 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
+    Fix for "#line" comments showing up in echo'd code in 2.12.0, fixes issue 1.
+
+ R/pgfSweaveDriver.R                |    3 ++-
+ inst/doc/pgfSweave.pdf             |  Bin 260062 -> 258836 bytes
+ inst/example/pgfSweave-example.tex |    2 +-
+ 3 files changed, 3 insertions(+), 2 deletions(-)
 
 commit 91209db8f9a9d7b696c187b7302c24271cbcb1a7
 Author: cameronbracken <cameron.bracken@gmail.com>
@@ -43,23 +45,6 @@ Date:   Mon Sep 13 21:20:25 2010 -0600
 
  exec/pgfsweave-script.R |    8 ++++++--
  1 files changed, 6 insertions(+), 2 deletions(-)
-
-commit 760492f629ed4a5371345d858d4b9c0301d20a6c
-Merge: 45a93a6 24d6be7
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Wed Sep 8 16:13:10 2010 +0000
-
-    Merge branch 'master' into r-forge-local
-    
-    Conflicts:
-    	ChangeLog
-    	inst/doc/figs/fig-normalSweave.pdf
-    	inst/doc/figs/fig-pgfSweave-hist.pdf
-    	inst/doc/figs/fig-pgfSweave-tikz-hist.pdf
-    	inst/doc/pgfSweave-example.pdf
-    	inst/doc/pgfSweave.pdf
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@18 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
 
 commit 24d6be79db77ea2b50d222821cf74465233e0186
 Merge: 5c6e4ca 99c533d
