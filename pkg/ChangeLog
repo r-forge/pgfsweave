@@ -1,3 +1,194 @@
+commit 84540e92f3e2b185ec6cc5ed68cf3721e0e75475
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Mon Nov 29 00:24:19 2010 -0700
+
+    Add \pgfrealjobname automatically if it does not exist
+    
+    - Make highlighting NOT default
+    
+    - Update docs to include example of highlighting
+
+ ChangeLog                                          |   21 +
+ NEWS                                               |    3 +-
+ R/pgfSweaveDriver.R                                |   51 ++-
+ R/utilities.R                                      |   13 +
+ inst/doc/figs/fig-normalSweave.pdf                 |  Bin 3056 -> 2960 bytes
+ inst/doc/figs/fig-pgfSweave-hist.pdf               |  Bin 16270 -> 16287 bytes
+ inst/doc/figs/fig-pgfSweave-tikz-hist.pdf          |  Bin 26900 -> 26849 bytes
+ inst/doc/pgfSweave-example-Rnw.in                  |   10 +-
+ inst/doc/pgfSweave-example-tex.in                  |   28 +--
+ inst/doc/pgfSweave-example.pdf                     |  Bin 77647 -> 75856 bytes
+ inst/doc/pgfSweave.Rnw                             |   56 +++-
+ inst/doc/pgfSweave.pdf                             |  Bin 239764 -> 262641 bytes
+ inst/example/pgfSweave-example.Rnw                 |   12 +-
+ inst/example/pgfSweave-example.tex                 |  410 +-------------------
+ .../vignette-src/pgfSweave-vignette-source.Rnw     |   33 ++-
+ man/pgfSweaveDriver.Rd                             |    7 +-
+ 16 files changed, 193 insertions(+), 451 deletions(-)
+
+commit 685894fade10a45d376d35a96add52aa0c7b1ab6
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Sat Nov 27 14:10:21 2010 -0700
+
+    Highlighting now incorporated with main code, works now with fixes in tidy.souce
+
+ ChangeLog                                 |   69 +++++
+ DESCRIPTION                               |    2 +-
+ R/pgfSweaveDriver.R                       |   56 +++--
+ inst/doc/figs/fig-normalSweave.pdf        |  Bin 2960 -> 3056 bytes
+ inst/doc/figs/fig-pgfSweave-hist.pdf      |  Bin 16249 -> 16270 bytes
+ inst/doc/figs/fig-pgfSweave-tikz-hist.pdf |  Bin 26894 -> 26900 bytes
+ inst/doc/pgfSweave-example-Rnw.in         |   19 +-
+ inst/doc/pgfSweave-example-tex.in         |  418 ++++++++++++++++++++++++++++-
+ inst/doc/pgfSweave-example.pdf            |  Bin 82971 -> 77647 bytes
+ inst/doc/pgfSweave.Rnw                    |  377 ++++++++++++++++++++++++++-
+ inst/doc/pgfSweave.pdf                    |  Bin 261229 -> 239764 bytes
+ inst/example/pgfSweave-example.Rnw        |    6 +-
+ inst/example/pgfSweave-example.tex        |  395 ++++++++++++++++++++++++++-
+ 13 files changed, 1287 insertions(+), 55 deletions(-)
+
+commit 88079809153bca88523d5d298847b2a6995b973c
+Merge: 0ae7ffe d788c15
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Sat Nov 27 12:20:42 2010 -0700
+
+    Merge branch 'highlight'
+    
+    Conflicts:
+    	DESCRIPTION
+    	NEWS
+    	R/pgfSweaveDriver.R
+    	inst/example/pgfSweave-example.tex
+
+commit 0ae7ffe47b307bb50bc005b19b3cfefb4f45d565
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Wed Nov 17 13:13:03 2010 -0700
+
+    Update NEWS and DESCRIPTION for next release
+
+ DESCRIPTION                        |    4 ++--
+ NEWS                               |    9 +++++++++
+ inst/example/pgfSweave-example.Rnw |    3 ++-
+ inst/example/pgfSweave-example.tex |    3 +++
+ 4 files changed, 16 insertions(+), 3 deletions(-)
+
+commit 6620bb2e158d6f33f988734c967e0037e1c36e78
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Wed Nov 17 12:28:51 2010 -0700
+
+    Regenerate graphics based on eps file when tex.driver is `latex'
+
+ ChangeLog                                          |  118 ++++++++++++++++++++
+ R/pgfSweaveDriver.R                                |    3 +-
+ inst/doc/figs/fig-normalSweave.pdf                 |  Bin 2987 -> 2960 bytes
+ inst/doc/figs/fig-pgfSweave-hist.pdf               |  Bin 16290 -> 16249 bytes
+ inst/doc/figs/fig-pgfSweave-tikz-hist.pdf          |  Bin 26906 -> 26894 bytes
+ inst/doc/pgfSweave-example-Rnw.in                  |    2 +-
+ inst/doc/pgfSweave-example.pdf                     |  Bin 82948 -> 82971 bytes
+ inst/doc/pgfSweave.Rnw                             |   18 +++-
+ inst/doc/pgfSweave.pdf                             |  Bin 260614 -> 261229 bytes
+ .../vignette-src/pgfSweave-vignette-source.Rnw     |   18 +++-
+ 10 files changed, 153 insertions(+), 6 deletions(-)
+
+commit 52d3f783196a7e4a79208e41d497f15fbce5849a
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Wed Nov 17 11:33:25 2010 -0700
+
+    Add "hidden" global option "keep.blank.line" among other things
+    
+    - If tex.driver is "latex" then convert dvi to pdf with dvipdf then to eps with pdftoeps
+    
+    - Move non-driver utility functions to another file
+
+ R/pgfSweaveDriver.R                                |  109 ++-----------------
+ R/utilities.R                                      |   92 +++++++++++++++++
+ inst/example/pgfSweave-example.Rnw                 |    2 +-
+ .../vignette-src/pgfSweave-vignette-source.Rnw     |    2 +-
+ 4 files changed, 106 insertions(+), 99 deletions(-)
+
+commit b5cc5f7658cb5975aa0bde80d099a2e8bfe1c3f9
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Tue Nov 16 00:46:52 2010 -0700
+
+    Fix the tex.driver option from changes in 2.12 and add a dvips command to automatically generate eps files for latex users
+
+ R/pgfSweaveDriver.R |  125 ++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 files changed, 120 insertions(+), 5 deletions(-)
+
+commit 2cdfa8afb06db55d4f9f1dbe22ab43f3b4a980d6
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Mon Nov 15 17:21:13 2010 -0700
+
+    Bump Date for cran release
+
+ DESCRIPTION |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit dc586b7c280894529cc92d648e40805f2415523f
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Mon Nov 15 17:09:14 2010 -0700
+
+    Finally fixed extra commentd from printing in echo'd output when keep.source=T
+
+ R/pgfSweaveDriver.R |   21 +++++++++++++++++----
+ 1 files changed, 17 insertions(+), 4 deletions(-)
+
+commit 4f338c3f0605a8236e8b4242c7fee3181a87ae7e
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Sun Nov 14 16:18:43 2010 -0700
+
+    Further fix for wierd comment in echo'd code chunks
+
+ R/pgfSweaveDriver.R |    4 ++--
+ R/zzz.R             |    4 +---
+ 2 files changed, 3 insertions(+), 5 deletions(-)
+
+commit 77fa60949c3c7d1db997b22607609b64605eb958
+Merge: 91166ed 60a21ce
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Thu Nov 4 11:41:58 2010 -0600
+
+    Merge branch 'master' of github.com:cameronbracken/pgfSweave
+
+commit 60a21ce3a54486332b8e173dbd23ede84dc78192
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Wed Nov 3 15:56:58 2010 -0600
+
+    Pull changes to tidy.souce from yihui
+
+ R/pgfSweaveDriver.R |  182 +++++++++++++++++++++++++--------------------------
+ 1 files changed, 89 insertions(+), 93 deletions(-)
+
+commit c6cab875171e94b4d7b18575567562db65103be5
+Author: Yihui Xie <xie@yihui.name>
+Date:   Wed Nov 3 16:29:11 2010 -0500
+
+    remove #line numbers correctly, and implemented an idea in my mind for long
+    
+    I believe '#comments like this' is bad -- we should add a space between # and the comments. This is rather subjective.
+
+ R/pgfSweaveDriver.R |  182 ++++++++++++++++++++++++++-------------------------
+ 1 files changed, 93 insertions(+), 89 deletions(-)
+
+commit 348368635384b0c5f383c3c370da4d6168a5ae11
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Wed Nov 3 13:27:15 2010 -0600
+
+    Version 1.0.10
+
+ ChangeLog                                 |  108 +++++++++++++++++++++++++++++
+ DESCRIPTION                               |    2 +-
+ NEWS                                      |    5 ++
+ README.md                                 |    3 +
+ inst/doc/figs/fig-normalSweave.pdf        |  Bin 4489 -> 2987 bytes
+ inst/doc/figs/fig-pgfSweave-hist.pdf      |  Bin 16294 -> 16290 bytes
+ inst/doc/figs/fig-pgfSweave-tikz-hist.pdf |  Bin 26904 -> 26906 bytes
+ inst/doc/pgfSweave-example-tex.in         |    2 +-
+ inst/doc/pgfSweave-example.pdf            |  Bin 82965 -> 82948 bytes
+ inst/doc/pgfSweave.Rnw                    |    4 -
+ inst/doc/pgfSweave.pdf                    |  Bin 258836 -> 260614 bytes
+ 11 files changed, 118 insertions(+), 6 deletions(-)
+
 commit c022dab0dcadb7b798aa0267897ca985b2f9eadc
 Author: cameronbracken <cameron.bracken@gmail.com>
 Date:   Wed Nov 3 13:22:56 2010 -0600
@@ -8,6 +199,25 @@ Date:   Wed Nov 3 13:22:56 2010 -0600
  inst/doc/pgfSweave.pdf             |  Bin 260062 -> 258836 bytes
  inst/example/pgfSweave-example.tex |    2 +-
  3 files changed, 3 insertions(+), 2 deletions(-)
+
+commit 91166eda6c7921728aced28e168fdab8a69ce7bd
+Merge: d222959 91209db
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Thu Sep 16 22:09:52 2010 -0600
+
+    Merge branch 'master' of github.com:cameronbracken/pgfSweave
+
+commit d2229595615facb70a8f1f6efff6e5c6179de8dd
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Thu Sep 16 22:09:22 2010 -0600
+
+    Version 1.0.9
+
+ DESCRIPTION            |    4 ++--
+ NEWS                   |    6 ++++++
+ R/pgfSweaveDriver.R    |    4 ++--
+ man/pgfSweaveDriver.Rd |    7 +++++--
+ 4 files changed, 15 insertions(+), 6 deletions(-)
 
 commit 91209db8f9a9d7b696c187b7302c24271cbcb1a7
 Author: cameronbracken <cameron.bracken@gmail.com>
@@ -45,6 +255,32 @@ Date:   Mon Sep 13 21:20:25 2010 -0600
 
  exec/pgfsweave-script.R |    8 ++++++--
  1 files changed, 6 insertions(+), 2 deletions(-)
+
+commit d788c1506b4c4a05aec986e38fcf0534e1b750e3
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Mon Sep 13 17:33:25 2010 -0600
+
+    Always add a special newline after highlighted lines
+
+ R/pgfSweaveDriver.R |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 915bead6bd425cf28ca6abbd3b6e5886765233d1
+Author: cameronbracken <cameron.bracken@gmail.com>
+Date:   Mon Sep 13 17:21:18 2010 -0600
+
+    New option `highlight' to color the syntax of echo'd chunks, enabled by default
+    
+      - No ready quite yet, it does not preserve the whit space in comments
+      - A few newlines need to be put in here and there where missing
+
+ DESCRIPTION                        |   21 ++-
+ NEWS                               |    6 +
+ R/pgfSweaveDriver.R                |  150 +++++++++++----
+ README.md                          |   22 ++-
+ inst/example/pgfSweave-example.Rnw |    6 +-
+ inst/example/pgfSweave-example.tex |  379 +++++++++++++++++++++++++++++++++++-
+ 6 files changed, 519 insertions(+), 65 deletions(-)
 
 commit 24d6be79db77ea2b50d222821cf74465233e0186
 Merge: 5c6e4ca 99c533d
@@ -126,25 +362,6 @@ Date:   Tue Aug 17 11:20:30 2010 -0600
  R/zzz.R |    4 ++++
  1 files changed, 4 insertions(+), 0 deletions(-)
 
-commit 45a93a66941cf6a04b117a413981cb41266a0f91
-Merge: 7a8a931 7bbab36
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Fri Aug 6 16:45:11 2010 +0000
-
-    Version 1.0.6
-    
-    Merge branch 'master' into r-forge-local
-    
-    Conflicts:
-    	ChangeLog
-    	inst/doc/figs/fig-normalSweave.pdf
-    	inst/doc/figs/fig-pgfSweave-hist.pdf
-    	inst/doc/figs/fig-pgfSweave-tikz-hist.pdf
-    	inst/doc/pgfSweave-example.pdf
-    	inst/doc/pgfSweave.pdf
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@17 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
 commit 7bbab36054009e9b5964497aeb39776c40b1e4d8
 Author: cameronbracken <cameron.bracken@gmail.com>
 Date:   Fri Aug 6 10:38:23 2010 -0600
@@ -173,37 +390,6 @@ Date:   Wed Apr 28 17:46:04 2010 -0600
  R/pgfSweaveDriver.R |   78 +++++++++++++++++++++++++++++++++++++++++++++++++-
  1 files changed, 76 insertions(+), 2 deletions(-)
 
-commit 7a8a931fc425c3816a2c48146432b21445e382d0
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Thu Apr 8 19:09:45 2010 +0000
-
-    Merge master branch
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@16 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
- ChangeLog                                 |   93 ++++++++++++++++++++++++++---
- inst/doc/figs/fig-normalSweave.pdf        |  Bin 5510 -> 3083 bytes
- inst/doc/figs/fig-pgfSweave-hist.pdf      |  Bin 17643 -> 17539 bytes
- inst/doc/figs/fig-pgfSweave-tikz-hist.pdf |  Bin 28962 -> 29032 bytes
- inst/doc/pgfSweave-example.pdf            |  Bin 88108 -> 88361 bytes
- inst/doc/pgfSweave.pdf                    |  Bin 294220 -> 294023 bytes
- 6 files changed, 84 insertions(+), 9 deletions(-)
-
-commit ba711ef7b690c45161572e5d413c78f39913d239
-Merge: 9e9787a d8ec864
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Thu Apr 8 19:09:40 2010 +0000
-
-    Merge branch 'master' into r-forge-local
-    
-    Conflicts:
-    	ChangeLog
-    	inst/doc/figs/fig-normalSweave.pdf
-    	inst/doc/pgfSweave-example.pdf
-    	inst/doc/pgfSweave.pdf
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@15 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
 commit d8ec8642a7296225877f14a40098fdb43cf92cb8
 Author: cameronbracken <cameron.bracken@gmail.com>
 Date:   Thu Apr 8 13:02:12 2010 -0600
@@ -223,15 +409,6 @@ Date:   Thu Apr 8 13:02:12 2010 -0600
  src/Makevars                              |    4 ---
  9 files changed, 38 insertions(+), 5 deletions(-)
 
-commit 9e9787ac21c4510c8743d06a058773f3cc10d7f8
-Merge: 5729aac a6c2600
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Wed Apr 7 00:31:51 2010 +0000
-
-    Merge branch 'master' into r-forge-local
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@14 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
 commit a6c2600e7df9b9137c0ef1c0caf6d002df33e36e
 Author: cameronbracken <cameron.bracken@gmail.com>
 Date:   Tue Apr 6 18:29:32 2010 -0600
@@ -241,21 +418,6 @@ Date:   Tue Apr 6 18:29:32 2010 -0600
  DESCRIPTION  |    3 ++-
  src/Makevars |    4 ++++
  2 files changed, 6 insertions(+), 1 deletions(-)
-
-commit 5729aac3dedd669e2a749b84f735b33a6c3a76b1
-Merge: dfa4886 0c7ffb2
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Sun Apr 4 21:04:43 2010 +0000
-
-    Merge branch 'master' into r-forge-local
-    
-    Conflicts:
-    	ChangeLog
-    	inst/doc/figs/fig-normalSweave.pdf
-    	inst/doc/pgfSweave-example.pdf
-    	inst/doc/pgfSweave.pdf
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@13 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
 
 commit 0c7ffb21a7b856e6a484004fb7bb211254a9a830
 Author: cameronbracken <cameron.bracken@gmail.com>
@@ -363,23 +525,6 @@ Date:   Tue Feb 23 01:57:06 2010 -0700
  .../vignette-src/pgfSweave-vignette-source.Rnw     |    6 ++-
  12 files changed, 84 insertions(+), 50 deletions(-)
 
-commit dfa48866b3b94c253b68c98d960aa2b3b5e46de3
-Merge: 82cc2fd 8b64651
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Fri Dec 25 20:40:27 2009 +0000
-
-    Merge branch 'master' into r-forge-local
-    
-    Conflicts:
-    	ChangeLog
-    	inst/doc/figs/fig-normalSweave.pdf
-    	inst/doc/figs/fig-pgfSweave-hist.pdf
-    	inst/doc/figs/fig-pgfSweave-tikz-hist.pdf
-    	inst/doc/pgfSweave-example.pdf
-    	inst/doc/pgfSweave.pdf
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@12 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
 commit 8b646513162b8486904ddbd916becc9d75602040
 Author: cameronbracken <cameron.bracken@gmail.com>
 Date:   Fri Dec 25 12:32:28 2009 -0800
@@ -411,24 +556,6 @@ Date:   Sun Dec 6 01:59:47 2009 -0700
  exec/pgfsweave-script.R |   26 ++++++++++++++------------
  3 files changed, 18 insertions(+), 14 deletions(-)
 
-commit 82cc2fd18794b91439e84120172991ec230a9b36
-Merge: d790e2d 09fc61a
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Sat Dec 5 19:01:42 2009 +0000
-
-    Merge branch 'master' into r-forge-local
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@11 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
-commit d790e2dd998a466e8303da9eaae0060516d877e1
-Merge: f4e1bcc 0de2874
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Sat Dec 5 19:01:35 2009 +0000
-
-    Merge branch 'master' into r-forge-local
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@10 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
 commit 09fc61a37fe7fa5bc8d0e7dcd2b640fa130385cf
 Author: cameronbracken <cameron.bracken@gmail.com>
 Date:   Sat Dec 5 12:00:55 2009 -0700
@@ -454,15 +581,6 @@ Date:   Sat Dec 5 11:54:51 2009 -0700
  R/pgfSweaveDriver.R |    8 ++++----
  1 files changed, 4 insertions(+), 4 deletions(-)
 
-commit f4e1bcc81bd683829b1ea53a86630bb1de921645
-Merge: 4982e2d 27f6b15
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Sat Nov 28 19:51:06 2009 +0000
-
-    Merge branch 'master' into r-forge-local
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@9 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
 commit 27f6b159e02fdc33bb28cb1a7b56d554613cf9ba
 Merge: 9cf2da9 07e5651
 Author: cameronbracken <cameron.bracken@gmail.com>
@@ -485,25 +603,6 @@ Date:   Sat Nov 28 12:46:09 2009 -0700
  src/dummy.c           |    5 ++++-
  4 files changed, 14 insertions(+), 3 deletions(-)
 
-commit 4982e2d805212d2b76f3ecd5823b7d10f55e6ba4
-Merge: c61bdab 9cf2da9
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Thu Nov 19 17:15:46 2009 +0000
-
-    Merge branch 'master' into r-forge-local
-    
-    Conflicts:
-    	ChangeLog
-    	DESCRIPTION
-    	inst/doc/figs/fig-normalSweave.pdf
-    	inst/doc/figs/fig-pgfSweave-hist.pdf
-    	inst/doc/figs/fig-pgfSweave-tikz-hist.pdf
-    	inst/doc/pgfSweave-example.pdf
-    	inst/doc/pgfSweave.pdf
-    	src/Makevars
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@8 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
 commit 9cf2da9a63801704daf5ff05eb17786d8f0eac45
 Author: cameronbracken <cameron.bracken@gmail.com>
 Date:   Thu Nov 19 10:11:40 2009 -0700
@@ -513,54 +612,6 @@ Date:   Thu Nov 19 10:11:40 2009 -0700
  DESCRIPTION  |    2 +-
  src/Makevars |    2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
-
-commit c61bdaba9895fc5129aea79812be2586f6ca2548
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Tue Nov 17 08:13:02 2009 +0000
-
-    Vignette recompile
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@7 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
- ChangeLog                                 | 1618 +++++++++++------------------
- inst/doc/figs/fig-normalSweave.pdf        |  Bin 6663 -> 2957 bytes
- inst/doc/figs/fig-pgfSweave-hist.pdf      |  Bin 17335 -> 17300 bytes
- inst/doc/figs/fig-pgfSweave-tikz-hist.pdf |  Bin 28704 -> 28696 bytes
- inst/doc/pgfSweave-example.pdf            |  Bin 86845 -> 86755 bytes
- inst/doc/pgfSweave.pdf                    |  Bin 279892 -> 277158 bytes
- 6 files changed, 589 insertions(+), 1029 deletions(-)
-
-commit c8a8648ef1b6819cc610ff8ec414e481212989d6
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Tue Nov 17 08:12:58 2009 +0000
-
-    Conflicts:
-    	ChangeLog
-    	DESCRIPTION
-    	NEWS
-    	README
-    	exec/pgfsweave
-    	exec/pgfsweave-script.R
-    	inst/doc/figs/fig-normalSweave.pdf
-    	inst/doc/figs/fig-pgfSweave-hist.pdf
-    	inst/doc/figs/fig-pgfSweave-tikz-hist.pdf
-    	inst/doc/pgfSweave-example.pdf
-    	inst/doc/pgfSweave.pdf
-    	src/Makevars
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@6 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
- ChangeLog                          |   14 +++++++++
- DESCRIPTION                        |    2 +-
- NEWS                               |   22 ++++++++------
- README                             |    1 -
- exec/install-script.R              |   55 ++++++++++++++++++++++++++++++++++++
- exec/pgfsweave                     |    4 +-
- exec/pgfsweave-script.R            |    2 +-
- inst/doc/figs/fig-normalSweave.pdf |  Bin 4907 -> 6663 bytes
- src/Makevars                       |   14 +--------
- src/dummy.c                        |    5 +++
- 10 files changed, 91 insertions(+), 28 deletions(-)
 
 commit 06a5f407416d0cc0b6bf70709529850e77615bf2
 Author: cameronbracken <cameron.bracken@gmail.com>
@@ -590,22 +641,6 @@ Date:   Tue Nov 17 00:44:07 2009 -0700
  src/dummy.c           |    5 ++++
  4 files changed, 61 insertions(+), 35 deletions(-)
 
-commit cb4efcd2aea84bbc650814567f3866fc8d41fd3a
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Sun Nov 15 07:07:46 2009 +0000
-
-    Updated Changelog
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@5 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
- ChangeLog                                 |   38 +++++++++++++++++++++++++++++
- inst/doc/figs/fig-normalSweave.pdf        |  Bin 2984 -> 4907 bytes
- inst/doc/figs/fig-pgfSweave-hist.pdf      |  Bin 17297 -> 17335 bytes
- inst/doc/figs/fig-pgfSweave-tikz-hist.pdf |  Bin 28732 -> 28704 bytes
- inst/doc/pgfSweave-example.pdf            |  Bin 86788 -> 86845 bytes
- inst/doc/pgfSweave.pdf                    |  Bin 281600 -> 279892 bytes
- 6 files changed, 38 insertions(+), 0 deletions(-)
-
 commit 1fdc9eaff9008e1cf894430621fe47cfea10bd8e
 Author: cameronbracken <cameron.bracken@gmail.com>
 Date:   Sat Nov 14 23:57:56 2009 -0700
@@ -624,490 +659,6 @@ Date:   Sat Nov 14 23:57:56 2009 -0700
  inst/doc/pgfSweave-example.pdf            |  Bin 86788 -> 86788 bytes
  inst/doc/pgfSweave.pdf                    |  Bin 281600 -> 277172 bytes
  11 files changed, 35 insertions(+), 15 deletions(-)
-
-commit c78a5f37368e3ce006ce79b9bb1bbabf96f631d8
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Sun Nov 15 02:50:38 2009 +0000
-
-    Moving mirror repo to r-forge instead of external on rforge
-    
-    Squashed commit of the following:
-    
-    commit b70267dfc9ff3baf9d2cb25e5af60b479eea63a9
-    Author: cameronbracken <cameron.bracken@gmail.com>
-    Date:   Sat Nov 14 19:36:50 2009 -0700
-    
-        Better support for R CMD pgfSweave on windows
-    
-        New git ChangeLog generated when compiling vignette
-    
-    commit 5f7c27c851daad6be9095ec1ace99c4323f79fdf
-    Author: cameronbracken <cameron.bracken@gmail.com>
-    Date:   Tue Nov 10 00:23:58 2009 -0700
-    
-        Makevars for windows, windows testing
-    
-    commit 7a9cdb55f2513aebb05e16b5482fc285bd41f480
-    Author: cameronbracken <cameron.bracken@gmail.com>
-    Date:   Mon Nov 9 15:14:53 2009 -0700
-    
-        Documentation update for 2.10.0
-    
-    commit c0b3433bbd86a0cd3c1b63bff26310f114f3f0fa
-    Author: cameronbracken <cameron.bracken@gmail.com>
-    Date:   Mon Nov 9 14:20:10 2009 -0700
-    
-        Merge in Charlie's edits
-    
-        Final tweaks for CRAN
-    
-    commit 7c99b5cd328261cb3e49a1204011c367aa6a7c78
-    Merge: 1e58f80 be2fc52
-    Author: cameronbracken <cameron.bracken@gmail.com>
-    Date:   Mon Nov 9 13:29:01 2009 -0700
-    
-        Merge branch 'master' of git://github.com/Sharpie/pgfSweave
-    
-    commit 1e58f8036e1421cd6286f2348be016b868145096
-    Author: cameronbracken <cameron.bracken@gmail.com>
-    Date:   Fri Oct 16 17:00:39 2009 -0600
-    
-        Fixed bug with faulty change recognition by setting chunkChanged permenantly to FALSE
-    
-    commit be2fc525151f79977de4a6c34aaddebe0face8da
-    Author: Charlie Sharpsteen <source@sharpsteen.net>
-    Date:   Thu Oct 15 00:15:13 2009 -0700
-    
-        - Many edits and spell fixes in the vignette.
-    
-    commit 1aaa05a6a2c51e4785fcbc4eb48432d2decdd920
-    Author: cameronbracken <cameron.bracken@gmail.com>
-    Date:   Fri Sep 25 12:33:30 2009 -0600
-    
-        updating Rd files
-    
-    commit 9d7c558190af1ec78608e38381d339c3581bfc55
-    Author: cameronbracken <cameron.bracken@gmail.com>
-    Date:   Fri Sep 25 12:12:00 2009 -0600
-    
-        Removing old vignette files, updated Makefile
-    
-    commit b473ad1b41ed6360e4c0eca0e3bd048fc58e1b9e
-    Merge: fdb4735 7094067
-    Author: cameronbracken <cameron.bracken@gmail.com>
-    Date:   Fri Sep 25 11:59:54 2009 -0600
-    
-        Merge branch 'tikz-device'
-    
-        Conflicts:
-        	R/zzz.R
-    
-    commit 7094067923f809270cee75565aab1e4c18fe1a76
-    Author: cameronbracken <cameron.bracken@gmail.com>
-    Date:   Fri Sep 25 11:58:19 2009 -0600
-    
-        More work on vignette
-    
-    commit 683105a0323fefc32afe7a7426cd87098e1928d2
-    Author: cameronbracken <cameron.bracken@gmail.com>
-    Date:   Tue Sep 22 00:10:02 2009 -0600
-    
-        Updated NEWS
-    
-    commit 029f10780862f22a49f6f0485711340cacd1f984
-    Author: cameronbracken <cameron.bracken@gmail.com>
-    Date:   Tue Sep 22 00:05:25 2009 -0600
-    
-        Major Update to vignette, Pushed version number to 1.0 in anticipation of CRAN, many other small fixes and changes
-    
-    commit fdb473565ec156923f8b51769f4689c57bf8ca1c
-    Merge: b4fe93d ac1eb2f
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Jun 23 07:55:44 2009 -0600
-    
-        Merge branch 'cmd-script'
-    
-    commit ac1eb2fdf3b38b84e9bac41d25da8a2fa4151a57
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Jun 23 07:54:56 2009 -0600
-    
-        another dummy commit
-    
-    commit 7c9f6c5d0f5ef7b3140300334567f0e977f94b1c
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Jun 23 07:53:53 2009 -0600
-    
-        dummy commit
-    
-    commit b4fe93d2412b163ae33e539787ea0d21b1b44699
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Jun 23 00:20:52 2009 -0600
-    
-        Updated NEWS and README files
-    
-    commit 67b41b59470b8d004541d091c2762fc401c7c97d
-    Merge: aa9080f 4ef0dbe
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Jun 23 00:00:15 2009 -0600
-    
-        Merge branch 'master' of git@github.com:cameronbracken/pgfSweave into tikz-device
-    
-        Conflicts:
-        	ChangeLog
-        	inst/misc/vignette-src/pgfSweave-vignette-source.Rnw
-    
-    commit 4ef0dbe31bc0d3755439ffd4a6507f707f1c4b2f
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Mon Jun 22 23:46:36 2009 -0600
-    
-        Now pgfsweave script is installed by default via src/Makevars
-    
-    commit 9c282851b018db18d675cc544402c941ced7a2a4
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Mon Jun 22 22:12:12 2009 -0600
-    
-        Testing charlie's method for installing a custom R CMD script
-    
-    commit aa9080f75e27cb4cdbd9c3eaf9ca9992e73d4a74
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Mon Jun 22 17:25:32 2009 -0600
-    
-        Added tikz option experimentally
-    
-    commit e41f9782805e88d3403203f385096f69fe63256c
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Mon Jun 22 16:39:56 2009 -0600
-    
-        More flexable make file for vignette
-    
-    commit d56a9cb3507f192cd3b62c32dc35ba45a3a81573
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Thu Jun 18 19:58:07 2009 +0000
-    
-        Using the highlight package for fancy code in the vignette
-    
-    commit 4a44e123ee3a713813b727f37e85f21b1bbeb718
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Fri May 1 16:08:10 2009 +0000
-    
-        - Encoding issue wit DESCRITION file
-        - New example in vignette
-    
-    commit 02a7a4cf055d0ac8bc56aa7acf6e3f482326c324
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Fri May 1 06:00:59 2009 +0000
-    
-        - Updated packages description files
-    
-    commit b7fac1e85c387aad6df55582b96f87a938496fea
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Fri May 1 05:40:40 2009 +0000
-    
-        - pgfSweave now turns off kerning if R.Version >= 2.9.0 because strange line breakes occur in conversion to pgf and then to pdf.
-    
-    commit af0cdee32c85c1ee5dc0e2b845e9d838bf84120c
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Thu Apr 30 07:06:55 2009 +0000
-    
-        - New R version of shell script
-    
-    commit 0a51f8af2f50fef2e5e7fefa4034a0ed9c0925ea
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Thu Apr 30 06:50:40 2009 +0000
-    
-        - renaming shell script
-    
-    commit 2301df16251405d1e0c9c4951ad9fe9901b6cf34
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Wed Apr 29 02:25:56 2009 +0000
-    
-        - Added shell script option --graphics-only
-    
-    commit 3aa4983986e87ad8d1b6d521dff144cdc9471dfb
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Sun Apr 19 01:54:39 2009 +0000
-    
-        - Added a GNU ChangeLog genterated with the svn2cl utility
-        - The ChangeLog is generated when make is ran in the inst/misc/vignette-src directory
-    
-    commit fddc4607974cf01723f2d86beb699a4a154671a1
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Mon Apr 13 23:44:37 2009 +0000
-    
-        - webpage update
-        - updated todo list in README
-    
-    commit b7fbd978939f658461a8e64580e46f14e5741418
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Mar 24 23:22:52 2009 +0000
-    
-        - missing image file for vignette
-    
-    commit 065676b824ac914580677026f732c5706ab3edf6
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Mar 24 23:20:39 2009 +0000
-    
-        - More windows fixes
-        - Improved example
-    
-    commit 08bf8e44da4ac763d1143bf8a1aea214fce5abbc
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Mar 24 21:46:23 2009 +0000
-    
-        - windows specific tweaks
-    
-    commit 8adaf2cc9018bc9ccbb23b0d66f8e9d389dd63cc
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Mar 24 05:05:30 2009 +0000
-    
-        - minor fix to check if we are running under windows correctly
-    
-    commit 1275cba8d0de64c46ecafbbdf4a9b049eaa93055
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Sun Mar 22 12:19:00 2009 +0000
-    
-        - Added support for miktex -job-name command line option
-        - Vignette update with windows installation instructions
-    
-    commit e0dbf47b6958eca0fd37adc4206186334b97bb3a
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Wed Mar 11 02:15:32 2009 +0000
-    
-        - custom web page
-    
-    commit 8cd88b7374f4a9db3c68439c87215272a1bde1ac
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Mar 10 07:08:04 2009 +0000
-    
-        - pdf version of vignette
-    
-    commit d41344e76043222a6b4cdcd48321b46d41b34a59
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Mar 10 06:58:56 2009 +0000
-    
-        - updated more robust example that actually compiles
-        - fix to pgfSweave.R to handle file names with absolute paths
-        - small documentation changes
-    
-    commit f08171f40c0b17c228aa8dc257db4074f8e160cc
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Feb 24 07:54:08 2009 +0000
-    
-        -making sure vignette is up to date
-    
-    commit 7866486adc39174b6f6a0b272ffbcd5e44e0ffb0
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Fri Feb 20 06:04:49 2009 +0000
-    
-        -renaming vignette
-    
-    commit ca481f1919521900c3dc3225059c893b9195591b
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Fri Feb 20 05:53:59 2009 +0000
-    
-        -small update to vignette
-        -tagged version 0.6, trunk version is 0.7
-    
-    commit 452295c439f75aa1cfc76710975a1f5df2220b00
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Sat Feb 7 00:20:22 2009 +0000
-    
-        no message
-    
-    commit 2f59860dad2464239a8378a5a187b7bf7740fb82
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Fri Feb 6 06:34:59 2009 +0000
-    
-        -fixed a commiting blunder
-    
-    commit 43aeb09391bf92189f16464e326a189c1396e100
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Fri Feb 6 06:14:22 2009 +0000
-    
-        -Initial commit
-        -Added branches and tags
-    
-    commit 43a0c83a5c7424a403e4b1624d4007123b5ec159
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Fri Feb 6 04:24:36 2009 +0000
-    
-        fixed check erroe
-    
-    commit ea8e52804b1215311510c424c98b9fc510e67f9d
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Fri Feb 6 04:20:25 2009 +0000
-    
-        removed rJava from zzz.R, my bad
-    
-    commit 3a863db89bf14788e7a092cbb40d2a68421f9fad
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Jan 27 08:45:26 2009 +0000
-    
-        Fixed -s option to pgfSweave shell script
-    
-    commit 934a38fdfe07572ef9234a5f3eec46436b64a578
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Mon Jan 26 22:02:26 2009 +0000
-    
-        - moved eps2pgf to the java directory
-        - updated pgfSweaveDriver.R to reflect the changed path
-        - minor documentation updates
-    
-    commit 01f30006a39af08f2d4f2334532aaa413c81ef97
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Wed Jan 21 21:11:00 2009 +0000
-    
-        Better handling of command line arguments in pgfSweave shell script
-    
-    commit 44c647b01ee0f5568f9fc0e08577e14b80c099a9
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Jan 20 08:36:40 2009 +0000
-    
-        -pgfSweave shell script has more robust option handling
-        -added example in external setion of vignette
-    
-    commit a534f4c036f8ee9e3c9905521e42d36225904fb4
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Tue Jan 20 02:58:45 2009 +0000
-    
-        Updated README with possible post to R-devel
-    
-    commit df8534ec3db8e3f2744db51d202e8b94ee1beaa6
-    Author: Charlie Sharpsteen <source@sharpsteen.net>
-    Date:   Sun Jan 18 19:02:10 2009 +0000
-    
-        Test of SVN access. Changed email in DESCRIPTION file.
-    
-    commit 45d551c7df95a214e6ac93b46c8806485d28685a
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Sun Jan 18 05:10:43 2009 +0000
-    
-        - More work on vignette
-        - Added shell script wrapper to pgfSweave function in exec/
-    
-    commit 1610dab246ad134605c316bbcd249a270da51f45
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Wed Jan 14 05:51:13 2009 +0000
-    
-        - Workaround for vignette dependence on pgfSweave already being installed
-        - run make and make cleanforbuild in inst/misc/vignette-src/ before submitting
-    
-    commit 394db9a311a99495bc41dbef6e1c5742d79985c2
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Mon Jan 12 08:52:51 2009 +0000
-    
-        - Fixed documentation wrapping issue
-        - Updated README
-    
-    commit 788b272fbeac0993bbf9c7e7568a448c14317a54
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Mon Jan 12 08:16:10 2009 +0000
-    
-        - Fixed documentation errors in R CMD check
-        - updated README
-        - vignette moved again to inst/misc/vignette-src
-    
-    commit 4313f64de41299587d4ffd4bc29e2bc45613a8d8
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Mon Jan 12 02:45:38 2009 +0000
-    
-        - R CMD check now has no errors but still gives warnings
-        - Created README file with the contents of the sourceforge tracker
-        - moved inst/doc/src to inst/misc/src until ussue with vignette is resolved
-    
-    commit eeed33ead213997add64fa205f7140dff73a2711
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Mon Jan 12 00:35:13 2009 +0000
-    
-        Updated DESCRIPTION file for trunk version 0.6
-    
-    commit faa4bfe6fb804957c598e79a0b1bb826731c9d2a
-    Author: Cameron Bracken <cameron.bracken@gmail.com>
-    Date:   Mon Jan 12 00:31:33 2009 +0000
-    
-        Initial commit, added trunk and version 0.5 tag
-    
-    commit 4b897c935d3e95fb55a7f048c151a5a539199bc5
-    Author: R-forge <http://rforge.net>
-    Date:   Sun Jan 11 20:26:15 2009 +0000
-    
-        Create initial repository structure
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@4 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
- ChangeLog                                          | 1080 +++++++
- DESCRIPTION                                        |   14 +
- NAMESPACE                                          |    6 +
- NEWS                                               |   53 +
- R/cacheSweaveUnexportedFunctions.R                 |  192 ++
- R/pgfSweave.R                                      |   33 +
- R/pgfSweaveDriver.R                                |  582 ++++
- R/zzz.R                                            |   16 +
- README                                             |  131 +
- exec/pgfsweave                                     |   78 +
- exec/pgfsweave-script.R                            |   89 +
- inst/COPYING                                       |   17 +
- inst/doc/Sweave.sty                                |   33 +
- inst/doc/figs/fig-normalSweave.pdf                 |  Bin 0 -> 2984 bytes
- inst/doc/figs/fig-pgfSweave-hist.pdf               |  Bin 0 -> 17297 bytes
- inst/doc/figs/fig-pgfSweave-tikz-hist.pdf          |  Bin 0 -> 28732 bytes
- inst/doc/pgfSweave-example-Rnw.in                  |   46 +
- inst/doc/pgfSweave-example-tex.in                  |   44 +
- inst/doc/pgfSweave-example.pdf                     |  Bin 0 -> 86788 bytes
- inst/doc/pgfSweave.Rnw                             |  449 +++
- inst/doc/pgfSweave.pdf                             |  Bin 0 -> 281600 bytes
- inst/example/Makefile                              |    6 +
- inst/example/pgfSweave-example.Rnw                 |   46 +
- inst/example/pgfSweave-example.tex                 |   44 +
- inst/java/eps2pgf/LICENSE.txt                      |  201 ++
- inst/java/eps2pgf/NOTICE.txt                       |   63 +
- inst/java/eps2pgf/README.txt                       |  110 +
- inst/java/eps2pgf/doc/eps2pgf_manual.pdf           |  Bin 0 -> 112401 bytes
- inst/java/eps2pgf/eps2pgf.jar                      |  Bin 0 -> 165159 bytes
- inst/java/eps2pgf/lib/FontBox-0.1.0.jar            |  Bin 0 -> 63167 bytes
- inst/java/eps2pgf/lib/JSAP-2.1.jar                 |  Bin 0 -> 69344 bytes
- inst/java/eps2pgf/lib/LICENSE_FontBox.txt          |   25 +
- inst/java/eps2pgf/lib/LICENSE_JSAP.txt             |   31 +
- inst/java/eps2pgf/resources/afm/Courier-Bold.afm   |  342 +++
- .../eps2pgf/resources/afm/Courier-BoldOblique.afm  |  342 +++
- .../java/eps2pgf/resources/afm/Courier-Oblique.afm |  342 +++
- inst/java/eps2pgf/resources/afm/Courier.afm        |  342 +++
- inst/java/eps2pgf/resources/afm/Helvetica-Bold.afm | 2827 ++++++++++++++++++
- .../resources/afm/Helvetica-BoldOblique.afm        | 2827 ++++++++++++++++++
- .../eps2pgf/resources/afm/Helvetica-Oblique.afm    | 3051 ++++++++++++++++++++
- inst/java/eps2pgf/resources/afm/Helvetica.afm      | 3051 ++++++++++++++++++++
- inst/java/eps2pgf/resources/afm/MustRead.html      |    1 +
- inst/java/eps2pgf/resources/afm/Symbol.afm         |  213 ++
- inst/java/eps2pgf/resources/afm/Times-Bold.afm     | 2588 +++++++++++++++++
- .../eps2pgf/resources/afm/Times-BoldItalic.afm     | 2384 +++++++++++++++
- inst/java/eps2pgf/resources/afm/Times-Italic.afm   | 2667 +++++++++++++++++
- inst/java/eps2pgf/resources/afm/Times-Roman.afm    | 2419 ++++++++++++++++
- inst/java/eps2pgf/resources/afm/ZapfDingbats.afm   |  225 ++
- inst/java/eps2pgf/resources/fontSubstitution.xml   |   10 +
- .../resources/fontdescriptions/Courier-Bold.font   |    9 +
- .../fontdescriptions/Courier-BoldOblique.font      |    9 +
- .../fontdescriptions/Courier-Oblique.font          |    9 +
- .../resources/fontdescriptions/Courier.font        |    9 +
- .../resources/fontdescriptions/Helvetica-Bold.font |    9 +
- .../fontdescriptions/Helvetica-BoldOblique.font    |    9 +
- .../fontdescriptions/Helvetica-Oblique.font        |    9 +
- .../resources/fontdescriptions/Helvetica.font      |    9 +
- .../eps2pgf/resources/fontdescriptions/Symbol.font |    9 +
- .../resources/fontdescriptions/Times-Bold.font     |    9 +
- .../fontdescriptions/Times-BoldItalic.font         |    9 +
- .../resources/fontdescriptions/Times-Italic.font   |    9 +
- .../resources/fontdescriptions/Times-Roman.font    |    9 +
- .../resources/fontdescriptions/ZapfDingbats.font   |    9 +
- inst/java/eps2pgf/resources/texstrings/default.xml |  405 +++
- .../eps2pgf/resources/texstrings/mathematica.xml   |  504 ++++
- inst/misc/vignette-src/Makefile                    |   81 +
- inst/misc/vignette-src/Sweave.sty                  |   33 +
- .../vignette-src/pgfSweave-vignette-source.Rnw     |  462 +++
- man/pgfSweave.Rd                                   |  108 +
- man/pgfSweaveDriver.Rd                             |   83 +
- src/Makevars                                       |   18 +
- src/Makevars.win                                   |   22 +
- 72 files changed, 28862 insertions(+), 0 deletions(-)
 
 commit b70267dfc9ff3baf9d2cb25e5af60b479eea63a9
 Author: cameronbracken <cameron.bracken@gmail.com>
@@ -1720,161 +1271,6 @@ Date:   Sat Feb 7 00:20:22 2009 +0000
  inst/doc/pgfSweave-vignette.pdf      |  Bin 178388 -> 177839 bytes
  4 files changed, 0 insertions(+), 0 deletions(-)
 
-commit 051f74bdbcb817c49b4291b6f92bd761ad6dcf80
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Fri Feb 6 18:28:56 2009 +0000
-
-    cleaned repo for external
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@3 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
- DESCRIPTION                                        |   12 -
- NAMESPACE                                          |    7 -
- NEWS                                               |    4 -
- R/cacheSweaveUnexportedFunctions.R                 |  190 --
- R/pgfSweave.R                                      |   24 -
- R/pgfSweaveDriver.R                                |  506 ----
- R/zzz.R                                            |   16 -
- README                                             |   50 -
- exec/pgfSweave                                     |   52 -
- inst/COPYING                                       |   17 -
- inst/doc/Sweave.sty                                |   27 -
- inst/doc/figs/fig-normalSweave.pdf                 |  Bin 3015 -> 0 bytes
- inst/doc/figs/fig-pgfSweave-hist.pdf               |  Bin 9589 -> 0 bytes
- inst/doc/figs/fig-third.pdf                        |  Bin 68110 -> 0 bytes
- inst/doc/pgfSweave-example-Rnw.in                  |   30 -
- inst/doc/pgfSweave-example-tex.in                  |   30 -
- inst/doc/pgfSweave-vignette.Rnw                    |  229 --
- inst/doc/pgfSweave-vignette.pdf                    |  Bin 178388 -> 0 bytes
- inst/example/Makefile                              |    6 -
- inst/example/pgfSweave-example.Rnw                 |   30 -
- inst/example/pgfSweave-example.tex                 |   30 -
- inst/java/eps2pgf/LICENSE.txt                      |  201 --
- inst/java/eps2pgf/NOTICE.txt                       |   63 -
- inst/java/eps2pgf/README.txt                       |  110 -
- inst/java/eps2pgf/doc/eps2pgf_manual.pdf           |  Bin 112401 -> 0 bytes
- inst/java/eps2pgf/eps2pgf.jar                      |  Bin 165159 -> 0 bytes
- inst/java/eps2pgf/lib/FontBox-0.1.0.jar            |  Bin 63167 -> 0 bytes
- inst/java/eps2pgf/lib/JSAP-2.1.jar                 |  Bin 69344 -> 0 bytes
- inst/java/eps2pgf/lib/LICENSE_FontBox.txt          |   25 -
- inst/java/eps2pgf/lib/LICENSE_JSAP.txt             |   31 -
- inst/java/eps2pgf/resources/afm/Courier-Bold.afm   |  342 ---
- .../eps2pgf/resources/afm/Courier-BoldOblique.afm  |  342 ---
- .../java/eps2pgf/resources/afm/Courier-Oblique.afm |  342 ---
- inst/java/eps2pgf/resources/afm/Courier.afm        |  342 ---
- inst/java/eps2pgf/resources/afm/Helvetica-Bold.afm | 2827 ------------------
- .../resources/afm/Helvetica-BoldOblique.afm        | 2827 ------------------
- .../eps2pgf/resources/afm/Helvetica-Oblique.afm    | 3051 --------------------
- inst/java/eps2pgf/resources/afm/Helvetica.afm      | 3051 --------------------
- inst/java/eps2pgf/resources/afm/MustRead.html      |    1 -
- inst/java/eps2pgf/resources/afm/Symbol.afm         |  213 --
- inst/java/eps2pgf/resources/afm/Times-Bold.afm     | 2588 -----------------
- .../eps2pgf/resources/afm/Times-BoldItalic.afm     | 2384 ---------------
- inst/java/eps2pgf/resources/afm/Times-Italic.afm   | 2667 -----------------
- inst/java/eps2pgf/resources/afm/Times-Roman.afm    | 2419 ----------------
- inst/java/eps2pgf/resources/afm/ZapfDingbats.afm   |  225 --
- inst/java/eps2pgf/resources/fontSubstitution.xml   |   10 -
- .../resources/fontdescriptions/Courier-Bold.font   |    9 -
- .../fontdescriptions/Courier-BoldOblique.font      |    9 -
- .../fontdescriptions/Courier-Oblique.font          |    9 -
- .../resources/fontdescriptions/Courier.font        |    9 -
- .../resources/fontdescriptions/Helvetica-Bold.font |    9 -
- .../fontdescriptions/Helvetica-BoldOblique.font    |    9 -
- .../fontdescriptions/Helvetica-Oblique.font        |    9 -
- .../resources/fontdescriptions/Helvetica.font      |    9 -
- .../eps2pgf/resources/fontdescriptions/Symbol.font |    9 -
- .../resources/fontdescriptions/Times-Bold.font     |    9 -
- .../fontdescriptions/Times-BoldItalic.font         |    9 -
- .../resources/fontdescriptions/Times-Italic.font   |    9 -
- .../resources/fontdescriptions/Times-Roman.font    |    9 -
- .../resources/fontdescriptions/ZapfDingbats.font   |    9 -
- inst/java/eps2pgf/resources/texstrings/default.xml |  405 ---
- .../eps2pgf/resources/texstrings/mathematica.xml   |  504 ----
- inst/misc/vignette-src/Makefile                    |   40 -
- inst/misc/vignette-src/Sweave.sty                  |   27 -
- .../vignette-src/pgfSweave-vignette-source.Rnw     |  225 --
- man/pgfSweave.Rd                                   |   90 -
- man/pgfSweaveDriver.Rd                             |   66 -
- 67 files changed, 0 insertions(+), 26804 deletions(-)
-
-commit 4880d2071875683eaef1cedda5b40295fba7c4a8
-Author: cameronbracken <cameronbracken@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Fri Feb 6 07:20:40 2009 +0000
-
-    Initial Commit, added branches and tags
-    
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@2 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
-
- DESCRIPTION                                        |   12 +
- NAMESPACE                                          |    7 +
- NEWS                                               |    4 +
- R/cacheSweaveUnexportedFunctions.R                 |  190 ++
- R/pgfSweave.R                                      |   24 +
- R/pgfSweaveDriver.R                                |  506 ++++
- R/zzz.R                                            |   16 +
- README                                             |   50 +
- exec/pgfSweave                                     |   52 +
- inst/COPYING                                       |   17 +
- inst/doc/Sweave.sty                                |   27 +
- inst/doc/figs/fig-normalSweave.pdf                 |  Bin 0 -> 3015 bytes
- inst/doc/figs/fig-pgfSweave-hist.pdf               |  Bin 0 -> 9589 bytes
- inst/doc/figs/fig-third.pdf                        |  Bin 0 -> 68110 bytes
- inst/doc/pgfSweave-example-Rnw.in                  |   30 +
- inst/doc/pgfSweave-example-tex.in                  |   30 +
- inst/doc/pgfSweave-vignette.Rnw                    |  229 ++
- inst/doc/pgfSweave-vignette.pdf                    |  Bin 0 -> 178388 bytes
- inst/example/Makefile                              |    6 +
- inst/example/pgfSweave-example.Rnw                 |   30 +
- inst/example/pgfSweave-example.tex                 |   30 +
- inst/java/eps2pgf/LICENSE.txt                      |  201 ++
- inst/java/eps2pgf/NOTICE.txt                       |   63 +
- inst/java/eps2pgf/README.txt                       |  110 +
- inst/java/eps2pgf/doc/eps2pgf_manual.pdf           |  Bin 0 -> 112401 bytes
- inst/java/eps2pgf/eps2pgf.jar                      |  Bin 0 -> 165159 bytes
- inst/java/eps2pgf/lib/FontBox-0.1.0.jar            |  Bin 0 -> 63167 bytes
- inst/java/eps2pgf/lib/JSAP-2.1.jar                 |  Bin 0 -> 69344 bytes
- inst/java/eps2pgf/lib/LICENSE_FontBox.txt          |   25 +
- inst/java/eps2pgf/lib/LICENSE_JSAP.txt             |   31 +
- inst/java/eps2pgf/resources/afm/Courier-Bold.afm   |  342 +++
- .../eps2pgf/resources/afm/Courier-BoldOblique.afm  |  342 +++
- .../java/eps2pgf/resources/afm/Courier-Oblique.afm |  342 +++
- inst/java/eps2pgf/resources/afm/Courier.afm        |  342 +++
- inst/java/eps2pgf/resources/afm/Helvetica-Bold.afm | 2827 ++++++++++++++++++
- .../resources/afm/Helvetica-BoldOblique.afm        | 2827 ++++++++++++++++++
- .../eps2pgf/resources/afm/Helvetica-Oblique.afm    | 3051 ++++++++++++++++++++
- inst/java/eps2pgf/resources/afm/Helvetica.afm      | 3051 ++++++++++++++++++++
- inst/java/eps2pgf/resources/afm/MustRead.html      |    1 +
- inst/java/eps2pgf/resources/afm/Symbol.afm         |  213 ++
- inst/java/eps2pgf/resources/afm/Times-Bold.afm     | 2588 +++++++++++++++++
- .../eps2pgf/resources/afm/Times-BoldItalic.afm     | 2384 +++++++++++++++
- inst/java/eps2pgf/resources/afm/Times-Italic.afm   | 2667 +++++++++++++++++
- inst/java/eps2pgf/resources/afm/Times-Roman.afm    | 2419 ++++++++++++++++
- inst/java/eps2pgf/resources/afm/ZapfDingbats.afm   |  225 ++
- inst/java/eps2pgf/resources/fontSubstitution.xml   |   10 +
- .../resources/fontdescriptions/Courier-Bold.font   |    9 +
- .../fontdescriptions/Courier-BoldOblique.font      |    9 +
- .../fontdescriptions/Courier-Oblique.font          |    9 +
- .../resources/fontdescriptions/Courier.font        |    9 +
- .../resources/fontdescriptions/Helvetica-Bold.font |    9 +
- .../fontdescriptions/Helvetica-BoldOblique.font    |    9 +
- .../fontdescriptions/Helvetica-Oblique.font        |    9 +
- .../resources/fontdescriptions/Helvetica.font      |    9 +
- .../eps2pgf/resources/fontdescriptions/Symbol.font |    9 +
- .../resources/fontdescriptions/Times-Bold.font     |    9 +
- .../fontdescriptions/Times-BoldItalic.font         |    9 +
- .../resources/fontdescriptions/Times-Italic.font   |    9 +
- .../resources/fontdescriptions/Times-Roman.font    |    9 +
- .../resources/fontdescriptions/ZapfDingbats.font   |    9 +
- inst/java/eps2pgf/resources/texstrings/default.xml |  405 +++
- .../eps2pgf/resources/texstrings/mathematica.xml   |  504 ++++
- inst/misc/vignette-src/Makefile                    |   40 +
- inst/misc/vignette-src/Sweave.sty                  |   27 +
- .../vignette-src/pgfSweave-vignette-source.Rnw     |  225 ++
- man/pgfSweave.Rd                                   |   90 +
- man/pgfSweaveDriver.Rd                             |   66 +
- 67 files changed, 26804 insertions(+), 0 deletions(-)
-
 commit 2f59860dad2464239a8378a5a187b7bf7740fb82
 Author: Cameron Bracken <cameron.bracken@gmail.com>
 Date:   Fri Feb 6 06:34:59 2009 +0000
@@ -2363,11 +1759,3 @@ Author: R-forge <http://rforge.net>
 Date:   Sun Jan 11 20:26:15 2009 +0000
 
     Create initial repository structure
-
-commit 761d21adc9ab1e5879c35bc7ee70785dc32e712a
-Author: stefan7th <stefan7th@edb9625f-4e0d-4859-8d74-9fd3b1da38cb>
-Date:   Mon Nov 24 08:47:35 2008 +0000
-
-    README updated
-    
-    git-svn-id: svn+ssh://svn.r-forge.r-project.org/svnroot/pgfsweave/pkg@1 edb9625f-4e0d-4859-8d74-9fd3b1da38cb
