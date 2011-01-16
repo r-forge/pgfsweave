@@ -4,21 +4,14 @@
 
 %% $ R CMD pgfsweave pgfSweave-vignette-source.Rnw
 
-<<setup,echo=F>>=
-require(cacheSweave)
-setCacheDir("cache")
-require(tikzDevice)
-if(!file.exists('figs')) dir.create('figs')
-@
-
 % \VignetteIndexEntry{The pgfSweave Package}
 % \VignetteDepends{pgfSweave}
 % \VignetteDepends{tikzDevice}
 
-\usepackage[nogin,noae]{Sweave}
 \usepackage[x11names]{xcolor}
 \usepackage{tikz}
 \usetikzlibrary{positioning,shapes.geometric,arrows}
+\usepackage[nogin,noae]{Sweave}
 
 \usepackage[parfill]{parskip}
 \usepackage{fancyvrb}
@@ -32,9 +25,14 @@ if(!file.exists('figs')) dir.create('figs')
 \title{The \pkg{pgfSweave} Package}
 \author{Cameron Bracken and Charlie Sharpsteen}
 
-\pgfrealjobname{pgfSweave-vignette-source}
-
 \begin{document}
+
+<<setup,echo=F>>=
+  require(cacheSweave)
+  setCacheDir("cache")
+  require(tikzDevice)
+  if(!file.exists('figs')) dir.create('figs')
+@
 
 %% Cache all of the code chunks and generate external figures by default 
 %% the pgfSweave defaults are pdf=FALSE and eps=FALSE and pgf=FALSE and tikz=TRUE.
@@ -43,7 +41,9 @@ if(!file.exists('figs')) dir.create('figs')
 
 \begin{center}
 {\Large The \pkg{pgfSweave} Package}\\
-{\large Cameron Bracken and Charlie Sharpsteen \\ \today}\vspace{1cm}
+{\large Cameron Bracken and Charlie Sharpsteen \\ \today}\\
+http://cran.r-project.org/web/packages/pgfSweave/index.html
+\vspace{1cm}
 \end{center}
 
 \tableofcontents
@@ -243,7 +243,7 @@ The original code in the chunk looks like:
         x[i] <- rnorm(1)
     }
         # OR
-    y <- rnorm(100)
+    y <- rnorm(100)  # and another comment
     
     plot(x,y)
 \end{Verbatim}
@@ -256,7 +256,7 @@ Normal:
         x[i] <- rnorm(1)
     }
         # OR
-    y <- rnorm(100)
+    y <- rnorm(100)  # and another comment
     
     plot(x,y)
 @
@@ -269,52 +269,55 @@ With Highlighting:
         x[i] <- rnorm(1)
     }
         # OR
-    y <- rnorm(100)
+    y <- rnorm(100)  # and another comment
 
     plot(x,y)
 @
 
 \subsection{The \code{tidy} option}
-Version 1.1.0 of \pkg{pgfSweave} introduced the \code{tidy} option.  This functionality was built into earlier releases, but is now available as an option for greater control.  Setting this chunk option to \code{TRUE} will clean up your code with the \code{tidy.source} function from the \code{animation} package. Using this option will not only preserve comments in the code but will reformat it's appearance.  This option takes precedent over the \code{keep.source} function but can be combined with the \code{highlight} option. Using the previous example:
+Version 1.1.0 of \pkg{pgfSweave} introduced the \code{tidy} option.  This functionality was built into earlier releases, but is now available as an option for greater control.  Setting this chunk option to \code{TRUE} will clean up your code with an internal version of the \code{tidy.source} function from the \code{formatR} package. Using this option will not only preserve comments in the code but will reformat it's appearance.  This option takes precedent over the \code{keep.source} function but can be combined with the \code{highlight} option. Using the previous example:
 
-Normal:
+Default (highlighting only, cleaned up with parse):
 <<notidy,echo=T,tidy=F,fig=F>>=
         # here is a comment
-    x <- numeric(100)
-    for( i in 1:100){
-        x[i] <- rnorm(1)
-    }
-        # OR
-    y <- rnorm(100)
+    x <- numeric(100)  # here is a comment
+    for( i in 1:100){ x[i] <- rnorm(1)}
+    z <- rnorm(100)  # and another comment
     
-    plot(x,y)
+    plot(x,z)
 @
 
-With Tidying:
+Normal with \code{keep.source=T} (highlighting only, not cleaned up):
+<<notidy,echo=T,tidy=F,fig=F,keep.source=T>>=
+        # here is a comment
+    x <- numeric(100)  # here is a comment
+    for( i in 1:100){ x[i] <- rnorm(1)}
+    z <- rnorm(100)  # and another comment
+    
+    plot(x,z)
+@
+
+Only Tidying:
+<<tidy,echo=T,tidy=T,highlight=F,fig=F>>=
+    # here is a comment
+x <- numeric(100)  # here is a comment
+for( i in 1:100){ x[i] <- rnorm(1)} 
+y <- rnorm(100)  # and another comment
+
+plot(x,y)
+@
+
+With Tidying and highlighting:
 <<tidy,echo=T,tidy=T,fig=F>>=
-        # here is a comment
-    x <- numeric(100)
-    for( i in 1:100){
-        x[i] <- rnorm(1)
-    }
-        # OR
-    y <- rnorm(100)
+    # here is a comment
+x <- numeric(100)  # here is a comment
+for( i in 1:100){ x[i] <- rnorm(1)}
+y <- rnorm(100)  # and another comment
 
-    plot(x,y)
+plot(x,y)
 @
 
-With Tidying and Highlighting:
-<<tidy,echo=T,tidy=T,highlight=T,fig=F>>=
-        # here is a comment
-    x <- numeric(100)
-    for( i in 1:100){
-        x[i] <- rnorm(1)
-    }
-        # OR
-    y <- rnorm(100)
-
-    plot(x,y)
-@
+NOTE: Inline comments are defined by the \code{tidy.source()} function to be ``two or more spaces plus the hash symbol \# in your source code.'' Two hash symbols will also not work. 
 
 \subsection{Compilation Time}
 The combination of \pkg{cacheSweave} code caching and \pkg{pgfSweave} figure caching can provide drastic decrease in compilation time.  The time speedup is highly dependednt on what code you are executing but using \pkg{pgfSweave} effectivly reduces the compilation time of \pkg{Sweave} to the time it takes to compile the \LaTeX{} document. 
@@ -409,7 +412,7 @@ The process that \pkg{pgfSweave} uses when caching and externalization are turne
     \draw[a] (move) |- (past);
     
 \end{tikzpicture}
-\caption{Flow chart of modeling procedure.}\label{flow}
+\caption{Flow chart of \pkg{pgfSweave} procedure.}\label{flow}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -464,7 +467,7 @@ The default in \code{Sweave.sty} is to fix the width of every image to 80\% of t
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Command line interface\label{commandline}}
 
-In recent versions, \pkg{pgfSweave} got an \code{R CMD} command line interface.  On Unix alikes (including Mac OS X) a symbolic link \code{\$R\_HOME/bin/pgfsweave} to \code{\$R\_HOME/library/pgfSweave/exec/pgfsweave-script.R}.  On Windows a copy of the script is made instead.  {\color{red} This script is only installed if pgfSweave is installed from source}.
+In versions 0.7.0, \pkg{pgfSweave} got an \code{R CMD} command line interface.  On Unix alikes (including Mac OS X) a symbolic link \code{\$R\_HOME/bin/pgfsweave} to \code{\$R\_HOME/library/pgfSweave/exec/pgfsweave-script.R}.  On Windows a copy of the script is made instead.  {\color{red} This script is only installed if pgfSweave is installed from source}.
 
 Here is a listing from \code{R CMD pgfsweave --help}:
 
@@ -579,5 +582,15 @@ make
 \end{verbatim}
 Which will create \code{pgfSweave-vignette-source.pdf}
 
+\section{Additional Resources}
+This is an on going list of third-party resources for \pkg{pgfSweave}. Suggestions for this list are welcome. 
+
+\begin{itemize}
+  
+  \item \url{http://code.cjb.net/pgfSweave.html}
+  
+  \item \url{http://yihui.name/en/tag/pgfsweave/}
+  
+\end{itemize}
 
 \end{document}

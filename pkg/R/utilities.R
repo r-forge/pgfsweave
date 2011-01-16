@@ -14,71 +14,185 @@
 ## evaluation is skipped.
 ## end [RDP]
 ##
-## [CWB]
-## minor modification to the original function 'cacheSweaveEvalWithOpt' has 
-## two outputs helping to improve the recognition of changes to code chunks
-## end [CWB]
 ################################################################################
 
+######################################################################
+## Take a 'filehash' database and insert a bunch of key/value pairs
 
-pgfSweaveEvalWithOpt <- function (expr, options) {
+dumpToDB <- function(db, list = character(0), envir = parent.frame()) {
+        if(!is(db, "filehash"))
+                stop("'db' should be a 'filehash' database")
+        for(i in seq(along = list))
+                dbInsert(db, list[i], get(list[i], envir, inherits = FALSE))
+        invisible(db)
+}
+
+copy2env <- function(keys, fromEnv, toEnv) {
+        for(key in keys) {
+                assign(key, get(key, fromEnv, inherits = FALSE), toEnv)
+        }
+}
+
+## Take an environment and return a copy.  Not an exact copy because
+## we don't get all keys (not sure why, but for some reason I remember
+## that getting all the keys caused problems.
+
+copyEnv <- function(from) {
+        env <- new.env(parent = parent.env(from))
+        keys <- ls(from, all.names = FALSE)
+
+        for(key in keys) 
+                assign(key, get(key, from, inherits = FALSE), env)
+        env
+}
+
+isNewOrModified <- function(specials, e1, e2) {
+        sapply(specials, function(s) {
+                in1 <- exists(s, e1, inherits = FALSE)
+                in2 <- exists(s, e2, inherits = FALSE)
+                is.new <- !in1 && in2
+                is.deleted <- in1 && !in2
+                
+                if((!in1 && !in2) || is.deleted)
+                        FALSE
+                else if(is.new)
+                        TRUE
+                else 
+                        !identical(get(s, e1, inherits = FALSE),
+                                   get(s, e2, inherits = FALSE))
+        })
+}
+
+## Check for new symbols in 'e2' that are not in 'e1'; doesn't check
+## for modified symbols.
+
+## If 'source()' was used, there may be new symbols in the global
+## environment, unless 'source(local = TRUE)' was used.  Also applies
+## for 'set.seed()'.
+
+checkNewSymbols <- function(e1, e2) {
+        if(identical(e1, e2))
+                return(character(0))
+        specials <- c(".Random.seed")
+
+        ## Don't check for names beginning with '.' for now
+        sym1 <- ls(e1)
+        sym2 <- ls(e2)
+        newsym <- setdiff(sym2, sym1)
+
+        use <- isNewOrModified(specials, e1, e2)
+        c(newsym, specials[use])
+}
+
+## Take an expression, evaluate it in a local environment and dump the
+## results to a database.  Associate the names of the dumped objects
+## with a digest of the expression.  Return a character vector of keys
+## that were dumped
+
+evalAndDumpToDB <- function(db, expr, exprDigest) {
+        env <- new.env(parent = globalenv())
+        global1 <- copyEnv(globalenv())
+        
+        eval(expr, env)
+
+        global2 <- copyEnv(globalenv())
+
+        ## Functions like 'source' and 'set.seed' alter the global
+        ## environment, so check after evaluation
+        new.global <- checkNewSymbols(global1, global2)
+        copy2env(new.global, globalenv(), env)
+
+        ## Get newly assigned object names
+        keys <- ls(env, all.names = TRUE)
+
+        ## Associate the newly created keys with the digest of
+        ## the expression
+        dbInsert(db, exprDigest, keys)
+
+        ## Dump the values of the keys to the database
+        dumpToDB(db, list = keys, envir = env)
+
+	if(length(keys) > 0)
+		copy2env(keys, env, globalenv())
+        keys
+}
+
+makeChunkDatabaseName <- function(cachedir, options, chunkDigest) {
+        file.path(cachedir, paste(options$label, chunkDigest, sep = "_"))
+}
+
+mangleDigest <- function(x) {
+        paste(".__", x, "__", sep = "")
+}
+
+hash <- function(object) {
+	digest(object, algo = "sha1")
+}
+
+hashExpr <- function(expr) {
+	expr <- deparse(expr, width.cutoff = 60)
+	hash(expr)
+}
+
+cacheSweaveEvalWithOpt <- function (expr, options) {
   chunkDigest <- options$chunkDigest
   
   ## 'expr' is a single expression, so something like 'a <- 1'
   res <- NULL
-  chunkChanged <- TRUE
 
   if(!options$eval)
-      return(res)
+          return(res)
   if(options$cache) {
     cachedir <- getCacheDir()
-  
+
     ## Create database name from chunk label and MD5
     ## digest
-    dbName <- makeChunkDatabaseName(cachedir, options,chunkDigest)
-    exprDigest <- mangleDigest(digest(expr))
-  
+    dbName <- makeChunkDatabaseName(cachedir, options, chunkDigest)
+    exprDigest <- mangleDigest(hashExpr(expr))
+
     ## Create 'stashR' database
     db <- new("localDB", dir = dbName, name = basename(dbName))
-  
+
     ## If the current expression is not cached, then
     ## evaluate the expression and dump the resulting
     ## objects to the database.  Otherwise, just read the
     ## vector of keys from the database
-  
-    if(!dbExists(db, exprDigest)){
+
+    if(!dbExists(db, exprDigest)) {
+
       keys <- try({
         evalAndDumpToDB(db, expr, exprDigest)
-        }, silent = TRUE)
-    }
-    else{
+      }, silent = TRUE)
+
+      ## If there was an error then just return the
+      ## condition object and let Sweave deal with it.
+      if(inherits(keys, "try-error"))
+        return(keys)
+
+    } else {
+
       keys <- dbFetch(db, exprDigest)
-      chunkChanged <- FALSE
+      dbLazyLoad(db, globalenv(), keys)
+
     }
-    
-  
-    ## If there was an error then just return the
-    ## condition object and let Sweave deal with it.
-    if(inherits(keys, "try-error"))
-      return(list(err=keys,chunkChanged=chunkChanged))
-  
-    dbLazyLoad(db, globalenv(), keys)
+    keys
+
+  } else {
+
+    ## If caching is turned off, just evaluate the expression
+    ## in the global environment
+    res <- try(withVisible(eval(expr, .GlobalEnv)),
+               silent=TRUE)
+    if(inherits(res, "try-error"))
+      return(res)
+    if(options$print | (options$term & res$visible))
+      print(res$value)
   }
-  else {
-      ## If caching is turned off, just evaluate the expression
-      ## in the global environment
-      res <- try(.Internal(eval.with.vis(expr, .GlobalEnv,baseenv())),silent=TRUE)
-      
-      if(inherits(res, "try-error"))
-        return(list(err=res,chunkChanged=chunkChanged))
-      if(options$print | (options$term & res$visible))
-        print(res$value)
-  }
-  list(err=res,chunkChanged=chunkChanged)
+  res
 }
 
 makeExternalShellScriptName <- function(Rnwfile) {
-    shellfile <- sub("\\.Rnw$", "\\.sh", Rnwfile)
+    shellfile <- sub("\\.[rR]nw$", "\\.sh", Rnwfile)
 
     ## Don''t clobber
     if(identical(shellfile, Rnwfile))
@@ -86,99 +200,15 @@ makeExternalShellScriptName <- function(Rnwfile) {
     shellfile
 }
 
-## preserve comments in the R code and at the same time make them 'well-formatted'
-tidy.source <- function(source = "clipboard", keep.comment = TRUE,
-    keep.blank.line = TRUE, begin.comment, end.comment, output = TRUE,
-    width.cutoff = 60L, ...) {
-    if (source == "clipboard" && Sys.info()["sysname"] == "Darwin") {
-        source = pipe("pbpaste")
-    }
-    tidy.block = function(block.text) {
-        exprs = base::parse(text = block.text)
-        n = length(exprs)
-        res = character(n)
-        for (i in 1:n) {
-            dep = paste(base::deparse(exprs[i], width.cutoff),
-                collapse = "\n")
-            res[i] = substring(dep, 12, nchar(dep) - 1)
-        }
-        return(res)
-    }
-    text.lines = readLines(source, warn = FALSE)
-    if (keep.comment) {
-        identifier = function() "pgfSweaveCommentIdentifier__"
-        #paste(sample(LETTERS), collapse = "")
-        if (missing(begin.comment))
-            begin.comment = identifier()
-        if (missing(end.comment))
-            end.comment = identifier()
-        
-        text.lines = gsub("^[[:space:]]+|[[:space:]]+$", "",
-            text.lines)
-        while (length(grep(sprintf("%s|%s", begin.comment, end.comment),
-            text.lines))) {
-            begin.comment = identifier()
-            end.comment = identifier()
-        }
-        line.num.comment = substring(text.lines, 1, 5) == "#line" 
-        text.lines = text.lines[!line.num.comment]
-          head.comment = substring(text.lines, 1, 1) == "#"
-          #grep("^[[:space:]]+|#",text.lines)
-          #
-        if ( length(head.comment) > 0 ) {
-            text.lines[head.comment] = gsub("\"", "'", text.lines[head.comment])
-            text.lines[head.comment] = gsub("^#", "  #", text.lines[head.comment])
-            text.lines[head.comment] = sprintf("%s=\"%s%s\"",
-                begin.comment, text.lines[head.comment], end.comment)
-        }
-        blank.line = text.lines == ""
-        if (any(blank.line) & keep.blank.line)
-            text.lines[blank.line] = sprintf("%s=\"%s\"", begin.comment,
-                end.comment)
-        text.mask = tidy.block(text.lines)
-        text.tidy = gsub(sprintf("%s = \"|%s\"", begin.comment,
-            end.comment), "", text.mask)
-    }
-    else {
-        text.tidy = text.mask = tidy.block(text.lines)
-        begin.comment = end.comment = ""
-    }
-    if (output)
-        cat(paste(text.tidy, collapse = "\n"), "\n", ...)
-    invisible(list(text.tidy = text.tidy, text.mask = text.mask,
-        begin.comment = begin.comment, end.comment = end.comment))
-}
-
-## to replace the default parse()
-parse2 <- function(text, ...) {
-    zz = tempfile()
-    enc = options(encoding = "native.enc")
-    writeLines(text, zz)
-    tidy.res = tidy.source(zz, out = FALSE, keep.blank.line = 
-        ifelse(is.null(getOption('keep.blank.line')), TRUE,
-            getOption('keep.blank.line')))
-    options(enc)
-    unlink(zz)
-    options(begin.comment = tidy.res$begin.comment, 
-        end.comment = tidy.res$end.comment)
-    base::parse(text = tidy.res$text.mask)
-}
-
-## to replace the default deparse()
-deparse2 <- function(expr, ...) {
-    gsub(sprintf("%s = \"|%s\"", getOption("begin.comment"),
-        getOption("end.comment")), "", base::deparse(expr, ...))
-}
-
   # from the limma package on bioconductor
-removeExt  <- function (x) 
+removeExt  <- function (x)
 {
     x <- as.character(x)
     n <- length(x)
-    if (length(grep("\\.", x)) < n) 
+    if (length(grep("\\.", x)) < n)
         return(x)
     ext <- sub("(.*)\\.(.*)$", "\\2", x)
-    if (all(ext[1] == ext)) 
+    if (all(ext[1] == ext))
         return(sub("(.*)\\.(.*)$", "\\1", x))
     else return(x)
 }
