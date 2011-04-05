@@ -1,6 +1,20 @@
 Please see the README.md file for development info
 
 --------------------------
+Version 1.2.1 - 2011-04-03
+--------------------------
+* [NEW] If PGF 2.10 is not available, issue a startup message but still load 
+        the package (So the package can go on CRAN). PGF 2.10 is still 
+        required to compile .tex file produced with pgfSweave
+* [NEW] Remove null device code which could cause problems with grid graphics
+* [NEW] Example using xelatex for external graphics
+* [NEW] Chunk options `relwidth' and `relheight' for scaling figures relative 
+        to the `width' and `height' options (thanks to Fabrice Rossi for the 
+        patch)
+* [CHANGED] Fix the internal caching of external graphics, it now works as 
+        expected and can save significant time
+
+--------------------------
 Version 1.2.0 - 2011-02-21
 --------------------------
 * [NEW] Use the tikz externalization library instead of the pgf backend. This 
