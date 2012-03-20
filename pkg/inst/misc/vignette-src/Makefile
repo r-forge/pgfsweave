@@ -13,7 +13,7 @@
 
 # Internal values
 
-DOC_PATH=../../doc/
+DOC_PATH=../../vignettes/
 EXAMPLE_PATH=../../example/
 TEST_PATH=../../tests/
 EXEC_PATH=../../../exec/
@@ -44,11 +44,13 @@ $(VIGNETTE_HANS_PDF): $(VIGNETTE_HANS_RNW)
 
 $(VIGNETTE_DUMMY_RNW): $(EXAMPLE_PDF)  $(VIGNETTE_SOURCE_PDF)
 	# Copy Sweave.sty
-	cp Sweave.sty $(DOC_PATH)/
+	# cp Sweave.sty $(DOC_PATH)/
 	# Copy all the figures
-	cp figs/*.pdf $(DOC_PATH)/figs/
-	cp figs/*.pgf $(DOC_PATH)/figs/
-	cp figs/*.tikz $(DOC_PATH)/figs/
+	cp pgfSweave-vignette-source.pdf $(DOC_PATH)/pgfSweave-vignette-source.pdf
+	cp *-concordance.tex $(DOC_PATH)/
+	cp fig-*.pdf $(DOC_PATH)
+	cp fig-*.pgf $(DOC_PATH)
+	cp fig-*.tikz $(DOC_PATH)
 	# Copy all the example file to include but dont use .Rnw so they are not 
 	# recognised as another vignette 
 	cp -f $(EXAMPLE_PATH)/pgfSweave-example.Rnw \
@@ -64,11 +66,12 @@ $(VIGNETTE_DUMMY_RNW): $(EXAMPLE_PDF)  $(VIGNETTE_SOURCE_PDF)
 		| grep -v '^\\usetikzlibrary{external}' \
 		| grep -v '^\\tikzexternalize' \
 		| grep -v '^\\tikzsetnextfilename' \
-		| grep -v '^\\tikzexternalfiledependsonfile'> tmp
+		| grep -v '^\\tikzexternalfiledependsonfile' \
+		| grep -v '^\\\tikzexternaldisable' > tmp
 	# Change the names of the input files
 	cat tmp | sed 's/pgfSweave-example\.Rnw/pgfSweave-example-Rnw.in/g' \
 			| sed 's/pgfSweave-example\.tex/pgfSweave-example-tex\.in/g' \
-			> ../../doc/pgfSweave.Rnw
+			> $(DOC_PATH)/pgfSweave.Rnw
 
 $(VIGNETTE_SOURCE_PDF):
 	echo `pwd`
@@ -78,16 +81,16 @@ $(EXAMPLE_PDF):
 	(cd $(EXAMPLE_PATH)/ ; make)
 
 cleanall:
-	rm -rf cache figs *.pdf $(RM_PATH).$(RM_SUFFIX) \
+	rm -rf cache *.pdf $(RM_PATH).$(RM_SUFFIX) \
 		$(DOC_PATH)/Sweave.sty $(DOC_PATH)/pgfSweave.Rnw $(DOC_PATH)/*.pdf \
-		$(DOC_PATH)/figs/* tmp $(CHANGELOG) 
+		tmp $(CHANGELOG) 
 	(cd $(EXAMPLE_PATH) ; make clean)
 	(cd $(TEST_PATH) ; make clean)
 
 clean:
-	rm -rf cache figs *.pdf $(RM_PATH).$(BUILD_RM_SUFFIX) \
+	rm -rf cache *.pdf $(RM_PATH).$(BUILD_RM_SUFFIX) \
 		./pgfSweave-vignette-source.tex $(DOC_PATH)/pgfSweave.tex \
-		$(DOC_PATH)/pgfSweave_hans.tex tmp
+		$(DOC_PATH)/pgfSweave_hans.tex tmp $(DOC_PATH)/Rplots.pdf
 	(cd $(EXAMPLE_PATH) ; make cleanforbuild)
 	(cd $(TEST_PATH) ; make cleanforbuild)
 

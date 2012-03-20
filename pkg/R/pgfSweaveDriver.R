@@ -32,9 +32,73 @@ pgfSweaveDriver <- function() {
        )
 }
 
+#' The Sweave driver for pgfSweave
+#' 
+#' An Sweave driver for caching code chunks and image files making for speedy
+#' compilation.
+#' 
+#' To only compile an Rnw to a tex file, \code{pgfSweaveDriver} should be used
+#' as the \code{driver} option to \code{\link{Sweave}}.  Otherwise use the
+#' \code{\link[pgfSweave]{pgfSweave}} function for a simple way to compile to
+#' pdf.
+#' 
+#' @aliases pgfSweaveDriver pgfSweaveSetup
+#' @rdname pgfSweaveDriver
+#' @param file A connection or a character string giving the name of the Sweave
+#'   file to load.
+#' @param syntax See \code{\link{RweaveLatex}}
+#' @param output See \code{\link{RweaveLatex}}
+#' @param quiet See \code{\link{RweaveLatex}}
+#' @param debug See \code{\link{RweaveLatex}}
+#' @param echo See \code{\link{RweaveLatex}}
+#' @param eval See \code{\link{RweaveLatex}}
+#' @param split See \code{\link{RweaveLatex}}
+#' @param stylepath See \code{\link{RweaveLatex}}
+#' @param pdf See \code{\link{RweaveLatex}}. Note the default is changed to
+#'   \code{FALSE}
+#' @param eps See \code{\link{RweaveLatex}}. Note the default is changed to
+#'   \code{FALSE}
+#' @param cache See \code{\link[cacheSweave]{cacheSweaveDriver}}
+#' @param tikz Set default for option \code{tikz}, see details below.
+#' @param pgf Set default for option \code{pgf}, see details below.
+#' @param external Set default for option \code{external}, see details below.
+#' @param sanitize Set default for option \code{sanitize}, see details below.
+#' @param highlight Should echo'd code be highlighted with the highlight
+#'   package.
+#' @param tidy Should echo'd code be cleaned up with the
+#'   \code{\link[formatR]{tidy.source}} function from the
+#'   \pkg{formatR} package.
+#' @param  concordance \code{\link{RweaveLatex}}
+#' @param figs.only \code{\link{RweaveLatex}}
+#' @return Nothing useful returned.
+#' @note \itemize{ \item For myfile.Rnw, Make sure to call the command
+#'   \\code{pgfrealjobname{myfile}} in the LaTeX header.  \item Calling
+#'   \code{\link[pgfSweave]{pgfSweave}} with \code{compile.tex=FALSE} is
+#'   equivalent to directly calling Sweave.  \item To obtain the speedup from
+#'   using pgf external graphics be sure to set \code{external=TRUE} on all
+#'   code chunks which generate a plot. The default code options for the driver
+#'   are \code{pdf=FALSE}, \code{eps=FALSE}, \code{tikz=TRUE},
+#'   \code{pgf=FALSE}, \code{external=FALSE}.  }
+#' @author Cameron Bracken \email{cameron.bracken@@gmail.com} and Charlie
+#'   Sharpsteen
+#' @seealso \code{\link[pgfSweave]{pgfSweave}},
+#'   \code{\link[pgfSweave]{pgfSweaveDriver}},
+#'   \code{\link[cacheSweave]{cacheSweave}}, \code{\link{Sweave}},
+#'   \code{\link[tikzDevice]{tikzDevice}} \code{\link[highlight]{highlight}}
+#' @references Sweave manual:
+#'   \url{http://www.statistik.lmu.de/~leisch/Sweave/Sweave-manual.pdf}
+#' 
+#' cacheSweave vignette:
+#'   \url{http://cran.r-project.org/web/packages/cacheSweave/vignettes/cacheSweave.pdf}
+#' @import utils
+#' @importFrom digest digest
+#' @importFrom tools texi2dvi
+#' @importFrom tikzDevice tikz
+#' @importFrom formatR tidy.source parse.tidy deparse.tidy
+#' @export 
 
-source('R/cacheSweaveUnexportedFunctions.R')
-source('R/utilities.R')
+#source('R/cacheSweaveUnexportedFunctions.R')
+#source('R/utilities.R')
 
 ## Add the 'pgf' and 'external', 'pdflatex', 'sanitize' option to the list
 pgfSweaveSetup <- function(file, syntax,
@@ -42,12 +106,13 @@ pgfSweaveSetup <- function(file, syntax,
               eval=TRUE, split=FALSE, stylepath=TRUE,
               pdf=FALSE, eps=FALSE, cache=FALSE, pgf=FALSE,
               tikz=TRUE, external=FALSE, sanitize = FALSE,
-              highlight = TRUE, tidy = FALSE)
+              highlight = TRUE, tidy = FALSE, concordance = FALSE, 
+              figs.only = TRUE)
 {
     out <- utils::RweaveLatexSetup(file, syntax, output=output, quiet=quiet,
                      debug=debug, echo=echo, eval=eval,
                      split=split, stylepath=stylepath, pdf=pdf,
-                     eps=eps)
+                     eps=eps, concordance = concordance, figs.only = figs.only)
 
     ######################################################################
     ## Additions here [RDP]
@@ -63,6 +128,7 @@ pgfSweaveSetup <- function(file, syntax,
     out$options[["tidy"]] <- tidy
     out$options[["relwidth"]] <- 1
     out$options[["relheight"]] <- 1
+    out$concordance <- ifelse(getOption('pgfSweaveConcordance'),TRUE, out$concordance)
     out[["haveHighlightSyntaxDef"]] <- FALSE
     out[["haveRealjobname"]] <- FALSE
     ## end [CWB]
@@ -78,6 +144,16 @@ pgfSweaveSetup <- function(file, syntax,
     ######################################################################
     
     out
+}
+
+pgfSweaveDriver <- function() {
+    list(
+       setup = pgfSweaveSetup,
+       runcode = pgfSweaveRuncode,
+       writedoc = pgfSweaveWritedoc,
+       finish = pgfSweaveLatexFinish,
+       checkopts = pgfSweaveOptions
+       )
 }
 
     # This function checks the options. Most of the checks is delegated to
@@ -142,26 +218,28 @@ pgfSweaveWritedoc <- function(object, chunk)
       # check if a single code chunk as the option before hand.
     if (!object$haveHighlightSyntaxDef){
       
-        # get the latex style definitions from the highlight package
-      tf <- tempfile()
-      cat(styler('default', 'sty', styler_assistant_latex),sep='\n',file=tf)
-      cat(boxes_latex(),sep='\n',file=tf,append=T)
-      hstyle <- readLines(tf)
+      if(is.null(getOption('pgfSweaveNoHighlight'))){
+          # get the latex style definitions from the highlight package
+        tf <- tempfile()
+        cat(styler('default', 'sty', styler_assistant_latex),sep='\n',file=tf)
+        cat(boxes_latex(),sep='\n',file=tf,append=T)
+        hstyle <- readLines(tf)
 
 
-        # find where to put the style definitions
-      begindoc <- "^[[:space:]]*\\\\documentclass.*$"
-      which <- grep(begindoc, chunk)
+          # find where to put the style definitions
+        begindoc <- "^[[:space:]]*\\\\documentclass.*$"
+        which <- grep(begindoc, chunk)
 
-        # add definitions for highlight environment
-      hstyle <- c(hstyle, "\\newenvironment{Houtput}{\\raggedright}{%\n%\n}")
+          # add definitions for highlight environment
+        hstyle <- c(hstyle, "\\newenvironment{Hinput}{\\begin{trivlist}\\item}{\\end{trivlist}}")
 
-            # put in the style definitions after the \documentclass command
-      if(length(which)) {
-        chunk <- c(chunk[1:which],hstyle,chunk[(which+1):length(chunk)])
-        linesout <- linesout[c(1L:which, which, seq(from = which +
-            1L, length.out = length(linesout) - which))]
-        object$haveHighlightSyntaxDef <- TRUE
+              # put in the style definitions after the \documentclass command
+        if(length(which)) {
+          chunk <- c(chunk[1:which],hstyle,chunk[(which+1):length(chunk)])
+          linesout <- linesout[c(1L:which, which, seq(from = which +
+              1L, length.out = length(linesout) - which))]
+          object$haveHighlightSyntaxDef <- TRUE
+        }
       }
     }
     
@@ -188,19 +266,19 @@ pgfSweaveWritedoc <- function(object, chunk)
                     "\\1", chunk[pos[1L]])
         object$options <- utils:::SweaveParseOptions(opts, object$options,
                                              pgfSweaveOptions)
-        if (isTRUE(object$options$concordance)
-              && !object$haveconcordance) {
+        if (isTRUE(object$options$concordance) && !object$haveconcordance) {
             savelabel <- object$options$label
             object$options$label <- "concordance"
             prefix <- utils:::RweaveChunkPrefix(object$options)
             object$options$label <- savelabel
-            object$concordfile <- paste(prefix, "tex", sep=".")
+            object$concordfile <- paste(prefix, 'tex', sep=".")
             chunk[pos[1L]] <- sub(object$syntax$docopt,
                                  paste("\\\\input{", prefix, "}", sep=""),
                                  chunk[pos[1L]])
             object$haveconcordance <- TRUE
-        } else
+        } else {
             chunk[pos[1L]] <- sub(object$syntax$docopt, "", chunk[pos[1L]])
+        }
     }
 
     cat(chunk, sep="\n", file=object$output, append=TRUE)
@@ -234,8 +312,6 @@ pgfSweaveRuncode <- function(object, chunk, options) {
     }
     if(options$keep.source) cat(" keep.source")
     if(options$eval){
-      if(options$print) cat(" print")
-      if(options$term) cat(" term")
       cat("", options$results)
       if(options$fig){
         if(options$eps) cat(" eps")
@@ -293,6 +369,10 @@ pgfSweaveRuncode <- function(object, chunk, options) {
   openSchunk <- FALSE
     # for the highlighted output environment
   openHoutput <- FALSE
+
+  Sinputenv <- ifelse(options$highlight, "Hinput", "Sinput")
+  ## Flag for the beginning of Hinput. If so, don't add hard newline_latex
+  beginSinput <- FALSE
 
   if(length(chunkexps)==0)
     return(object)
@@ -353,22 +433,16 @@ pgfSweaveRuncode <- function(object, chunk, options) {
       cat("\nRnw> ", paste(dce, collapse="\n+  "),"\n")
 
     if(options$echo && length(dce)){
-      if(!openSinput & !options$highlight){
+      if(!openSinput){
         if(!openSchunk){
           cat("\\begin{Schunk}\n",file=chunkout, append=TRUE)
             linesout[thisline + 1] <- srcline
             thisline <- thisline + 1
             openSchunk <- TRUE
         }
-          cat("\\begin{Sinput}",file=chunkout, append=TRUE)
+          cat("\\begin{", Sinputenv, "}", sep="", file=chunkout, append=TRUE)
           openSinput <- TRUE
-      }else if(!openHoutput & options$highlight){
-
-          cat("\\begin{Houtput}\n",file=chunkout, append=TRUE)
-          linesout[thisline + 1] <- srcline
-          thisline <- thisline + 1
-          openHoutput <- TRUE
-
+          beginSinput <- TRUE
       }
 
          # Actual printing of chunk code
@@ -384,16 +458,16 @@ pgfSweaveRuncode <- function(object, chunk, options) {
           
         }else{
 
-          if(nce == 1)
-            cat(newline_latex(),file=chunkout, append=TRUE)
+          if (!beginSinput) cat(newline_latex(), file=chunkout, append=TRUE)
 
           highlight(parser.output=parser(text=dce),
             renderer=renderer_latex(document=FALSE),
-            output = chunkout, showPrompts=TRUE,final.newline = TRUE)
-              # highlight doesnt put in an ending newline for some reason
-          cat(newline_latex(),file=chunkout, append=TRUE)
+            output = chunkout, showPrompts=TRUE, 
+            size=ifelse(is.null(getOption('highlight.size')),
+              "normalsize", getOption('highlight.size')))
 
         }
+        beginSinput <- FALSE
 
       }else{
           # regular output, may be tidy'd or not
@@ -438,7 +512,7 @@ pgfSweaveRuncode <- function(object, chunk, options) {
 
       if(length(output)>0 & (options$results != "hide")){
         if(openSinput){
-          cat("\n\\end{Sinput}\n", file=chunkout,append=TRUE)
+          cat("\n\\end{", Sinputenv, "}\n", sep="", file=chunkout, append=TRUE)
           linesout[thisline + 1:2] <- srcline
           thisline <- thisline + 2
           openSinput <- FALSE
@@ -484,23 +558,14 @@ pgfSweaveRuncode <- function(object, chunk, options) {
     }
   }
 
-  if(options$highlight || options$tidy)
-    cat("\n", file=chunkout, append=TRUE)
-
   if(openSinput){
-    cat("\n\\end{Sinput}\n", file=chunkout, append=TRUE)
+    cat("\n\\end{", Sinputenv, "}\n", sep="", file=chunkout, append=TRUE)
     linesout[thisline + 1:2] <- srcline
     thisline <- thisline + 2
   }
 
   if(openSchunk){
     cat("\\end{Schunk}\n", file=chunkout, append=TRUE)
-    linesout[thisline + 1] <- srcline
-    thisline <- thisline + 1
-  }
-
-  if(openHoutput){
-    cat("\\end{Houtput}\n", file=chunkout, append=TRUE)
     linesout[thisline + 1] <- srcline
     thisline <- thisline + 1
   }
@@ -677,6 +742,39 @@ pgfSweaveRuncode <- function(object, chunk, options) {
     ##end graphics options [CWB]
     #############################################
   }
+  browser()
   object$linesout <- c(object$linesout, linesout)
   return(object)
+}
+
+# this is from R 2.13, later versions break pgfSweave concordance
+pgfSweaveLatexFinish <- function(object, error = FALSE)
+{
+    outputname <- summary(object$output)$description
+    inputname <- object$filename
+    if (!object$quiet && !error)
+        cat("\n",
+            sprintf("You can now run (pdf)latex on '%s'", outputname),
+            "\n", sep = "")
+    close(object$output)
+    if (length(object$chunkout))
+        for (con in object$chunkout) close(con)
+    if (object$haveconcordance) {
+        ## This output format is subject to change.  Currently it contains
+        ## three parts, separated by colons:
+        ## 1.  The output .tex filename
+        ## 2.  The input .Rnw filename
+        ## 3.  The input line numbers corresponding to each output line.
+        ##     This are compressed using the following simple scheme:
+        ##     The first line number, followed by
+        ##     a run-length encoded diff of the rest of the line numbers.
+        linesout <- object$linesout
+        vals <- rle(diff(linesout))
+        vals <- c(linesout[1L], as.numeric(rbind(vals$lengths, vals$values)))
+        concordance <- paste(strwrap(paste(vals, collapse = " ")), collapse = " %\n")
+        special <- paste("\\Sconcordance{concordance:", outputname, ":",
+                         inputname, ":%\n", concordance,"}\n", sep = "")
+        cat(special, file = object$concordfile)
+    }
+    invisible(outputname)
 }
